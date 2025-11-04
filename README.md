@@ -1,36 +1,232 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐳 Next.js + Docker Setup
 
-## Getting Started
+Este proyecto usa **Docker** y **Docker Compose** para ejecutar una aplicación Next.js de forma aislada y reproducible, tanto en **modo desarrollo** como en **producción**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Requisitos previos
+
+Asegúrate de tener instalado:
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Node.js 20+](https://nodejs.org/) (solo necesario para desarrollo local sin Docker)
+
+---
+
+## 🧱 Estructura del proyecto
+
+```
+📦 proyecto/
+┣ 📂 src/
+┣ 📂 app/
+┣ 📜 Dockerfile
+┣ 📜 docker-compose.yml
+┣ 📜 package.json
+┣ 📜 tsconfig.json
+┗ 📜 next.config.js
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Dockerfile
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```dockerfile
+# Etapa base
+FROM node:20-alpine AS base
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
 
-## Learn More
+# Etapa de desarrollo (sin build)
+FROM base AS development
+COPY . .
+CMD ["npm", "run", "dev"]
 
-To learn more about Next.js, take a look at the following resources:
+# Etapa de producción (con build)
+FROM base AS production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧩 docker-compose.yml
 
-## Deploy on Vercel
+```yaml
+services:
+  web:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧰 Comandos básicos
+
+### 1️⃣ Instalar dependencias locales
+
+Antes de crear la imagen, asegúrate de tener todas las dependencias instaladas:
+
+```bash
+npm install
+```
+
+### 2️⃣ Construir la imagen
+
+Crea la imagen del contenedor usando el Dockerfile:
+
+```bash
+docker compose build
+```
+
+Si quieres reconstruir todo desde cero (sin caché):
+
+```bash
+docker compose build --no-cache
+```
+
+### 3️⃣ Levantar el contenedor (modo desarrollo)
+
+Ejecuta la aplicación con hot reload (modo desarrollo):
+
+```bash
+docker compose up
+```
+
+Levantar en segundo plano:
+
+```bash
+docker compose up -d
+```
+
+Apagar todo:
+
+```bash
+docker compose down
+```
+
+### 4️⃣ Verificar contenedores activos
+
+```bash
+docker ps
+```
+
+Ver todos (incluso los detenidos):
+
+```bash
+docker ps -a
+```
+
+### 5️⃣ Ver logs
+
+```bash
+docker compose logs -f
+```
+
+Solo logs del servicio web:
+
+```bash
+docker compose logs -f web
+```
+
+### 6️⃣ Entrar dentro del contenedor
+
+Abrir una terminal dentro del contenedor:
+
+```bash
+docker compose exec web sh
+```
+
+Salir del contenedor:
+
+```bash
+exit
+```
+
+### 7️⃣ Instalar dependencias desde dentro del contenedor
+
+Si necesitas agregar un nuevo paquete:
+
+```bash
+docker compose exec web npm install nombre-del-paquete
+```
+
+---
+
+## 🏗️ Construir imagen de producción
+
+Para crear una imagen optimizada:
+
+```bash
+docker build -t front-erp-web:prod --target production .
+```
+
+Y ejecutarla:
+
+```bash
+docker run -p 3000:3000 front-erp-web:prod
+```
+
+Esto ejecuta la aplicación en modo producción, sin hot reload.
+
+---
+
+## 🧹 Comandos de limpieza
+
+Eliminar contenedores detenidos:
+
+```bash
+docker container prune
+```
+
+Eliminar imágenes no usadas:
+
+```bash
+docker image prune
+```
+
+Eliminar todo (contenedores, redes, imágenes):
+
+```bash
+docker system prune -a
+```
+
+---
+
+## 💡 Flujo recomendado de desarrollo
+
+```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Construir imagen (primera vez o tras cambios de dependencias)
+docker compose build
+
+# 3. Levantar contenedor en modo dev
+docker compose up
+
+# 4. Instalar nuevas dependencias dentro del contenedor (opcional)
+docker compose exec web npm install axios
+
+# 5. Apagar y limpiar
+docker compose down
+```
+
+---
+
+## 🌐 Acceso
+
+Una vez levantado el contenedor, la app estará disponible en:
+
+👉 **http://localhost:3000**
