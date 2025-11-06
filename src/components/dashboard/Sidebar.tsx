@@ -2,7 +2,7 @@
 
 import { RiAlignRight } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSheetPlastic, FaChalkboardUser, FaPeopleGroup } from "react-icons/fa6";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
@@ -13,24 +13,27 @@ import { BiCalendarCheck, BiTask, BiGroup } from "react-icons/bi";
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [rol, setRol] = useState<string>("");
   const pathname = usePathname();
 
-
-
-  let rol = "";
-  try {
-    const raw = localStorage.getItem("auth-storage");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      rol = parsed?.state?.user?.rol || "";
-      console.log("🎯 ROL desde localStorage:", rol);
+  // Leer rol desde localStorage solo en el cliente
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("auth-storage");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const userRol = parsed?.state?.user?.rol || "";
+        setRol(userRol);
+        console.log("🎯 ROL desde localStorage:", userRol);
+      }
+    } catch (err) {
+      console.error("Error al leer el rol:", err);
     }
-  } catch (err) {
-    console.error("Error al leer el rol:", err);
-  }
+  }, []);
 
   const menuItems = [
     { icon: MdDashboard, text: "Inicio", path: "" },
+    { icon: MdDashboard, text: "Empresa", path: "" },
     { 
       icon: FaPeopleGroup, 
       text: "planificación", 
@@ -44,17 +47,7 @@ const Sidebar = () => {
     },
   ];
 
-  const filteredItems = menuItems.filter((item) => {
-    if (rol === "estudiante" || rol === "docente") {
-      return item.text === "Dashboard";
-    }
-    return true;
-  });
 
-
-  if (rol === "docente" || rol === "estudiante") {
-    filteredItems.push({ icon: FaSheetPlastic, text: "Votos", path: "votos" });
-  }
 
   // Función para manejar la expansión de submenús
   const toggleSubmenu = (itemText: string) => {
@@ -92,7 +85,7 @@ const Sidebar = () => {
 
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-2">
-            {filteredItems.map((item, index) => {
+            {menuItems.map((item, index) => {
               const Icon = item.icon;
               const hasSubmenu = item.submenu && item.submenu.length > 0;
               const isExpanded = expandedItems.includes(item.text);

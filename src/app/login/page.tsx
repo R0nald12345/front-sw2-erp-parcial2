@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { useAuth } from "@/src/hooks/useAuth";
-//import { useAuth } from "@/hooks/useAuth";
-// Change these lines - use string paths instead of imports
 const uagrm_logo = "/login/uagrm_logo.png";
 const logo_facebook = "/login/logo_facebook.png";
 const logo_whatApps = "/login/logo_whatApps.png";

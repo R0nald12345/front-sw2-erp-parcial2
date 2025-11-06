@@ -4,6 +4,11 @@ import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { ChevronDown } from 'lucide-react';
 
+// Función helper para formatear números de manera consistente
+const formatNumber = (num: number): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
 
 interface EstadoTramiteData {
   name: string;
@@ -89,17 +94,17 @@ const DashboardTramites: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Total de trámites:</h3>
-          <p className="text-3xl font-bold text-gray-800">{stats.totalTramites.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-gray-800">{formatNumber(stats.totalTramites)}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Trámites pendientes:</h3>
-          <p className="text-3xl font-bold text-orange-600">{stats.tramitesPendientes.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-orange-600">{formatNumber(stats.tramitesPendientes)}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Trámites finalizados:</h3>
-          <p className="text-3xl font-bold text-green-600">{stats.tramitesFinalizados.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-green-600">{formatNumber(stats.tramitesFinalizados)}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
