@@ -230,3 +230,89 @@ docker compose down
 Una vez levantado el contenedor, la app estará disponible en:
 
 👉 **http://localhost:3000**
+
+
+# Front ERP Web - Next.js
+
+Sistema de gestión RRHH integrado con múltiples microservicios a través de GraphQL Gateway.
+
+## 🏗️ Arquitectura
+
+```
+GraphQL Gateway (Node.js:4000)
+├── ERP/RRHH (Spring Boot:8080)
+│   ├── Empresas
+│   ├── Ofertas de Trabajo
+│   ├── Postulaciones
+│   ├── Entrevistas
+│   └── Evaluaciones
+├── BI (FastAPI:8001)
+│   ├── Analíticas
+│   └── Reportes
+└── ML (Go Fiber:3001)
+    ├── Productos
+    └── Recomendaciones
+```
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── constants/
+│   └── api.constants.ts          # URLs de microservicios
+├── service/
+│   ├── api.client.ts             # Instancias de axios
+│   ├── graphql.service.ts        # Ejecutor GraphQL
+│   ├── auth.service.ts
+│   └── microservices/
+│       ├── erp/                  # Servicios ERP/RRHH
+│       ├── bi/                   # Servicios BI
+│       └── ml/                   # Servicios ML
+├── graphql/
+│   ├── queries/                  # Queries por microservicio
+│   └── mutations/                # Mutations por microservicio
+├── types/
+│   ├── erp/                      # Tipos ERP/RRHH
+│   ├── bi/                       # Tipos BI
+│   └── ml/                       # Tipos ML
+├── hooks/
+│   ├── erp/                      # Hooks ERP/RRHH
+│   ├── bi/                       # Hooks BI
+│   └── ml/                       # Hooks ML
+├── page/
+└── components/
+```
+
+## 🚀 Inicio Rápido
+
+```bash
+# Instalar dependencias
+npm install
+
+# Variables de entorno
+cp .env.example .env.local
+
+# Desarrollo
+npm run dev
+```
+
+## 📊 Endpoints
+
+- **Gateway GraphQL**: http://localhost:4000/graphql
+- **ERP**: http://localhost:8080/api/*
+- **BI**: http://localhost:8001/*
+- **ML**: http://localhost:3001/api/*
+
+## 🔑 Características
+
+- ✅ Integración GraphQL completa
+- ✅ Type-safe con TypeScript
+- ✅ Hooks reutilizables
+- ✅ Gestión de errores centralizada
+- ✅ Soporte para múltiples microservicios
+
+## 📦 Dependencias
+
+```bash
+npm install axios graphql
+```

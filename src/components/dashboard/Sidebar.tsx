@@ -26,13 +26,13 @@ const Sidebar = () => {
   }, []);
 
   const menuItems = [
-    { icon: MdDashboard, text: "Reporte", path: "reporte" },
+    { icon: MdDashboard, text: "Inicio", path: "inicio" },
     { icon: MdDashboard, text: "Empresa", path: "empresa" },
     { icon: MdDashboard, text: "Oferta Trabajo", path: "oferta-trabajo" },
     { icon: MdDashboard, text: "Postulaciones", path: "postulaciones" },
     { icon: MdDashboard, text: "Entrevista", path: "entrevista" },
     { icon: MdDashboard, text: "Evaluaciones", path: "evaluaciones" },
-    { icon: MdDashboard, text: "Reportes", path: "reportes" },
+    { icon: MdDashboard, text: "Reportes", path: "reporte" },
   ];
 
   const isItemActive = (item: any) => {
