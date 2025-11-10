@@ -2,92 +2,26 @@
 
 import { useState } from 'react';
 import { Calendar, Clock, Video, MapPin, User, Briefcase, ChevronLeft, ChevronRight, Plus, Edit, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
+import { useEntrevista } from '@/src/hooks/erp/useEntrevista';
+
+interface Entrevista {
+  id: string;
+  fecha: string;
+  entrevistador: string;
+}
 
 const GestionEntrevista = () => {
-  const [currentDate, setCurrentDate] = useState(new Date(2024, 10, 8));
-  const [viewMode, setViewMode] = useState('week');
-  const [selectedEntrevista, setSelectedEntrevista] = useState(null);
+  const { entrevistas, loading, error } = useEntrevista();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedEntrevista, setSelectedEntrevista] = useState<any>(null);
 
-  const entrevistas = [
-    {
-      id: 1,
-      candidato: 'Juan Carlos Pérez',
-      puesto: 'Desarrollador Full Stack',
-      empresa: 'Tech Solutions S.A.',
-      fecha: '2024-11-08',
-      hora: '10:00',
-      duracion: 60,
-      tipo: 'Presencial',
-      lugar: 'Oficina Central - Sala A',
-      entrevistador: 'Ing. Roberto Sánchez',
-      estado: 'Confirmada',
-      notas: 'Primera entrevista técnica',
-      objetivos: ['Evaluar conocimientos en React', 'Discutir proyectos anteriores']
-    },
-    {
-      id: 2,
-      candidato: 'María González',
-      puesto: 'Diseñadora UX/UI',
-      empresa: 'Innovasoft',
-      fecha: '2024-11-08',
-      hora: '14:30',
-      duracion: 45,
-      tipo: 'Virtual',
-      lugar: 'Google Meet',
-      entrevistador: 'Lic. Ana Torres',
-      estado: 'Pendiente',
-      notas: 'Revisión de portafolio',
-      objetivos: ['Ver trabajos previos', 'Evaluar creatividad']
-    },
-    {
-      id: 3,
-      candidato: 'Roberto Silva',
-      puesto: 'Analista de Datos',
-      empresa: 'DataCorp',
-      fecha: '2024-11-09',
-      hora: '09:00',
-      duracion: 90,
-      tipo: 'Presencial',
-      lugar: 'Oficina Central - Sala B',
-      entrevistador: 'Dr. Carlos Méndez',
-      estado: 'Confirmada',
-      notas: 'Prueba técnica incluida',
-      objetivos: ['Evaluar SQL y Python', 'Caso práctico de análisis']
-    },
-    {
-      id: 4,
-      candidato: 'Ana Martínez',
-      puesto: 'Project Manager',
-      empresa: 'Consulting Group',
-      fecha: '2024-11-10',
-      hora: '11:00',
-      duracion: 60,
-      tipo: 'Virtual',
-      lugar: 'Zoom',
-      entrevistador: 'Ing. Luis Vargas',
-      estado: 'Confirmada',
-      notas: 'Entrevista de competencias',
-      objetivos: ['Evaluar liderazgo', 'Casos de gestión de proyectos']
-    },
-    {
-      id: 5,
-      candidato: 'Laura Torres',
-      puesto: 'Desarrollador Mobile',
-      empresa: 'Tech Solutions S.A.',
-      fecha: '2024-11-11',
-      hora: '15:00',
-      duracion: 60,
-      tipo: 'Presencial',
-      lugar: 'Oficina Central - Sala C',
-      entrevistador: 'Ing. Roberto Sánchez',
-      estado: 'Cancelada',
-      notas: 'Cancelada por el candidato',
-      objetivos: []
-    }
-  ];
+  // Mostrar estados de carga y error
+  if (loading) return <div className="p-6 text-center">Cargando entrevistas...</div>;
+  if (error) return <div className="p-6 text-center text-red-600">Error: {error}</div>;
+  if (!entrevistas || entrevistas.length === 0) return <div className="p-6 text-center">No hay entrevistas</div>;
 
-  const getEstadoColor = (estado) => {
-    const colores = {
+  const getEstadoColor = (estado: string): string => {
+    const colores: Record<string, string> = {
       'Confirmada': 'bg-green-100 text-green-800 border-green-300',
       'Pendiente': 'bg-yellow-100 text-yellow-800 border-yellow-300',
       'Cancelada': 'bg-red-100 text-red-800 border-red-300',
@@ -96,7 +30,7 @@ const GestionEntrevista = () => {
     return colores[estado] || 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
-  const getTipoIcon = (tipo) => {
+  const getTipoIcon = (tipo: string) => {
     return tipo === 'Virtual' ? <Video className="w-4 h-4" /> : <MapPin className="w-4 h-4" />;
   };
 
@@ -117,20 +51,20 @@ const GestionEntrevista = () => {
 
   const weekDates = getWeekDates();
 
-  const getEntrevistasPorFecha = (fecha) => {
+  const getEntrevistasPorFecha = (fecha: Date): any[] => {
     const fechaStr = fecha.toISOString().split('T')[0];
-    return entrevistas.filter(e => e.fecha === fechaStr).sort((a, b) => a.hora.localeCompare(b.hora));
+    return entrevistas.filter((e: any) => e.fecha.split('T')[0] === fechaStr).sort((a: any, b: any) => a.fecha.localeCompare(b.fecha));
   };
 
-  const navigateWeek = (direction) => {
+  const navigateWeek = (direction: number): void => {
     const newDate = new Date(currentDate);
     newDate.setDate(currentDate.getDate() + (direction * 7));
     setCurrentDate(newDate);
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="p-6 bg-linear-to-br from-gray-50 to-purple-50 min-h-screen">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -216,20 +150,19 @@ const GestionEntrevista = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {entrevistasDelDia.map(entrevista => (
+                    {entrevistasDelDia.map((entrevista: any) => (
                       <div 
                         key={entrevista.id}
                         onClick={() => setSelectedEntrevista(entrevista)}
-                        className={`p-2 rounded-lg cursor-pointer hover:shadow-md transition-all ${getEstadoColor(entrevista.estado)} border`}
+                        className="p-2 rounded-lg cursor-pointer hover:shadow-md transition-all bg-blue-50 border border-blue-200"
                       >
                         <div className="text-xs font-semibold flex items-center gap-1 mb-1">
                           <Clock className="w-3 h-3" />
-                          {entrevista.hora}
+                          {new Date(entrevista.fecha).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                         </div>
-                        <div className="text-xs font-medium truncate">{entrevista.candidato}</div>
-                        <div className="text-xs flex items-center gap-1 mt-1">
-                          {getTipoIcon(entrevista.tipo)}
-                          <span className="truncate">{entrevista.tipo}</span>
+                        <div className="text-xs font-medium truncate">{entrevista.entrevistador}</div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          {entrevista.postulacion?.nombre || 'Sin postulante'}
                         </div>
                       </div>
                     ))}
@@ -242,29 +175,26 @@ const GestionEntrevista = () => {
 
         {/* Lista de Entrevistas */}
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Próximas Entrevistas</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Todas las Entrevistas</h3>
           <div className="space-y-4">
-            {entrevistas.filter(e => e.estado !== 'Cancelada').map(entrevista => (
+            {entrevistas.map((entrevista: any) => (
               <div key={entrevista.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => setSelectedEntrevista(entrevista)}>
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h4 className="text-lg font-bold text-gray-900">{entrevista.candidato}</h4>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getEstadoColor(entrevista.estado)}`}>
-                        {entrevista.estado}
-                      </span>
+                      <h4 className="text-lg font-bold text-gray-900">{entrevista.postulacion?.nombre || 'N/A'}</h4>
                     </div>
                     <p className="text-gray-600 flex items-center gap-2 mb-1">
                       <Briefcase className="w-4 h-4" />
-                      {entrevista.puesto} - {entrevista.empresa}
+                      {entrevista.postulacion?.oferta?.titulo || 'N/A'}
                     </p>
                     <p className="text-gray-600 flex items-center gap-2 mb-1">
                       <Calendar className="w-4 h-4" />
-                      {entrevista.fecha} a las {entrevista.hora} ({entrevista.duracion} min)
+                      {new Date(entrevista.fecha).toLocaleDateString('es-ES')} a las {new Date(entrevista.fecha).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                     <p className="text-gray-600 flex items-center gap-2 mb-1">
-                      {getTipoIcon(entrevista.tipo)}
-                      {entrevista.lugar}
+                      <Clock className="w-4 h-4" />
+                      Duración: {entrevista.duracionMin} minutos
                     </p>
                     <p className="text-gray-600 flex items-center gap-2">
                       <User className="w-4 h-4" />
@@ -275,7 +205,7 @@ const GestionEntrevista = () => {
                     <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" onClick={() => entrevista.id && alert('Eliminar: ' + entrevista.id)}>
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -292,12 +222,9 @@ const GestionEntrevista = () => {
               <div className="p-6 border-b border-gray-200">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{selectedEntrevista.candidato}</h2>
-                    <p className="text-gray-600 mt-1">{selectedEntrevista.puesto}</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{selectedEntrevista.postulacion?.nombre || 'N/A'}</h2>
+                    <p className="text-gray-600 mt-1">{selectedEntrevista.postulacion?.oferta?.titulo || 'Sin información'}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getEstadoColor(selectedEntrevista.estado)}`}>
-                    {selectedEntrevista.estado}
-                  </span>
                 </div>
               </div>
               
@@ -307,27 +234,21 @@ const GestionEntrevista = () => {
                     <h4 className="text-sm font-semibold text-gray-600 mb-2">Fecha y Hora</h4>
                     <p className="text-gray-900 flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      {selectedEntrevista.fecha}
+                      {new Date(selectedEntrevista.fecha).toLocaleDateString('es-ES')}
                     </p>
                     <p className="text-gray-900 flex items-center gap-2 mt-1">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      {selectedEntrevista.hora} ({selectedEntrevista.duracion} minutos)
+                      {new Date(selectedEntrevista.fecha).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-2">Modalidad</h4>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-2">Duración</h4>
                     <p className="text-gray-900 flex items-center gap-2">
-                      {getTipoIcon(selectedEntrevista.tipo)}
-                      {selectedEntrevista.tipo}
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      {selectedEntrevista.duracionMin} minutos
                     </p>
-                    <p className="text-gray-600 text-sm mt-1">{selectedEntrevista.lugar}</p>
                   </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Empresa</h4>
-                  <p className="text-gray-900">{selectedEntrevista.empresa}</p>
                 </div>
 
                 <div>
@@ -338,26 +259,20 @@ const GestionEntrevista = () => {
                   </p>
                 </div>
 
-                {selectedEntrevista.objetivos.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-600 mb-2">Objetivos de la Entrevista</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {selectedEntrevista.objetivos.map((obj, idx) => (
-                        <li key={idx} className="text-gray-700 text-sm">{obj}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Objetivos Totales</h4>
+                  <p className="text-gray-700 text-sm bg-gray-50 p-3 rounded-lg">{selectedEntrevista.objetivosTotales}</p>
+                </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Notas</h4>
-                  <p className="text-gray-700 text-sm bg-gray-50 p-3 rounded-lg">{selectedEntrevista.notas}</p>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Objetivos Cubiertos</h4>
+                  <p className="text-gray-700 text-sm bg-gray-50 p-3 rounded-lg">{selectedEntrevista.objetivosCubiertos}</p>
                 </div>
               </div>
 
               <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
-                  Cancelar Entrevista
+                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setSelectedEntrevista(null)}>
+                  Cerrar
                 </button>
                 <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                   Editar

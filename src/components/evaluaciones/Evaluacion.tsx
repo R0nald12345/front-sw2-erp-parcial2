@@ -3,9 +3,14 @@
 import { useState } from 'react';
 import { Star, TrendingUp, Award, MessageSquare, Save, Send, User, Briefcase, Calendar } from 'lucide-react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { useEvaluacion } from '@/src/hooks/erp/useEvaluacion';
+import { useEntrevista } from '@/src/hooks/erp/useEntrevista';
 
 const Evaluacion = () => {
-  const [candidatoSeleccionado, setCandidatoSeleccionado] = useState(null);
+  const { evaluaciones, loading: loadingEval, error: errorEval, crearEvaluacion, eliminarEvaluacion, refetch } = useEvaluacion();
+  const { entrevistas, loading: loadingEntrev, error: errorEntrev } = useEntrevista();
+  
+  const [candidatoSeleccionado, setCandidatoSeleccionado] = useState<any>(null);
   const [evaluacion, setEvaluacion] = useState({
     calificacion_tecnica: 0,
     calificacion_actitud: 0,
@@ -13,96 +18,20 @@ const Evaluacion = () => {
     comentarios: ''
   });
 
-  const candidatos = [
-    {
-      id: 1,
-      nombre: 'Juan Carlos Pérez',
-      puesto: 'Desarrollador Full Stack',
-      empresa: 'Tech Solutions S.A.',
-      fecha_entrevista: '2024-11-05',
-      entrevistador: 'Ing. Roberto Sánchez',
-      evaluacion_previa: {
-        calificacion_tecnica: 8.5,
-        calificacion_actitud: 9.0,
-        calificacion_general: 8.8,
-        comentarios: 'Excelente conocimiento técnico. Muy comunicativo y proactivo.'
-      },
-      habilidades_evaluadas: [
-        { nombre: 'React', calificacion: 9 },
-        { nombre: 'Node.js', calificacion: 8 },
-        { nombre: 'Base de Datos', calificacion: 8 },
-        { nombre: 'Comunicación', calificacion: 9 },
-        { nombre: 'Trabajo en Equipo', calificacion: 9 }
-      ]
-    },
-    {
-      id: 2,
-      nombre: 'María González',
-      puesto: 'Diseñadora UX/UI',
-      empresa: 'Innovasoft',
-      fecha_entrevista: '2024-11-04',
-      entrevistador: 'Lic. Ana Torres',
-      evaluacion_previa: {
-        calificacion_tecnica: 9.0,
-        calificacion_actitud: 8.5,
-        calificacion_general: 8.8,
-        comentarios: 'Portfolio impresionante. Gran atención al detalle.'
-      },
-      habilidades_evaluadas: [
-        { nombre: 'Diseño Visual', calificacion: 9 },
-        { nombre: 'Prototipado', calificacion: 9 },
-        { nombre: 'Investigación UX', calificacion: 8 },
-        { nombre: 'Creatividad', calificacion: 10 },
-        { nombre: 'Comunicación', calificacion: 8 }
-      ]
-    },
-    {
-      id: 3,
-      nombre: 'Roberto Silva',
-      puesto: 'Analista de Datos',
-      empresa: 'DataCorp',
-      fecha_entrevista: '2024-11-03',
-      entrevistador: 'Dr. Carlos Méndez',
-      evaluacion_previa: null,
-      habilidades_evaluadas: []
-    },
-    {
-      id: 4,
-      nombre: 'Ana Martínez',
-      puesto: 'Project Manager',
-      empresa: 'Consulting Group',
-      fecha_entrevista: '2024-11-02',
-      entrevistador: 'Ing. Luis Vargas',
-      evaluacion_previa: {
-        calificacion_tecnica: 7.5,
-        calificacion_actitud: 9.5,
-        calificacion_general: 8.5,
-        comentarios: 'Excelente liderazgo. Experiencia sólida en gestión de proyectos complejos.'
-      },
-      habilidades_evaluadas: [
-        { nombre: 'Liderazgo', calificacion: 9 },
-        { nombre: 'Planificación', calificacion: 8 },
-        { nombre: 'Gestión de Riesgos', calificacion: 7 },
-        { nombre: 'Comunicación', calificacion: 10 },
-        { nombre: 'Resolución de Problemas', calificacion: 8 }
-      ]
-    }
-  ];
-
-  const handleRatingChange = (campo, valor) => {
+  const handleRatingChange = (campo: string, valor: number) => {
     setEvaluacion(prev => ({
       ...prev,
       [campo]: valor
     }));
   };
 
-  const StarRating = ({ rating, onChange, readOnly = false }) => {
+  const StarRating = ({ rating, onChange, readOnly = false }: {rating: number; onChange?: (val: number) => void; readOnly?: boolean}) => {
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
           <button
             key={star}
-            onClick={() => !readOnly && onChange(star)}
+            onClick={() => !readOnly && onChange?.(star)}
             disabled={readOnly}
             className={`${readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} transition-transform`}
           >
@@ -120,8 +49,8 @@ const Evaluacion = () => {
     );
   };
 
-  const prepararDatosRadar = (habilidades) => {
-    return habilidades.map(h => ({
+  const prepararDatosRadar = (habilidades: any[]) => {
+    return habilidades.map((h: any) => ({
       categoria: h.nombre,
       valor: h.calificacion,
       fullMark: 10
@@ -129,7 +58,7 @@ const Evaluacion = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 to-green-50 min-h-screen">
+    <div className="p-6 bg-linear-to-br from-gray-50 to-green-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -181,12 +110,12 @@ const Evaluacion = () => {
           <div className="lg:col-span-1 bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Candidatos para Evaluar</h3>
             <div className="space-y-3">
-              {candidatos.map(candidato => (
+              {entrevistas.map((candidato: any) => (
                 <div
                   key={candidato.id}
                   onClick={() => {
                     setCandidatoSeleccionado(candidato);
-                    setEvaluacion(candidato.evaluacion_previa || {
+                    setEvaluacion({
                       calificacion_tecnica: 0,
                       calificacion_actitud: 0,
                       calificacion_general: 0,
@@ -201,14 +130,14 @@ const Evaluacion = () => {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-900">{candidato.nombre}</h4>
+                      <h4 className="font-bold text-gray-900">{candidato.postulacion?.nombre || 'N/A'}</h4>
                       <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
                         <Briefcase className="w-3 h-3" />
-                        {candidato.puesto}
+                        {candidato.postulacion?.oferta?.titulo || 'Sin puesto'}
                       </p>
                       <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
-                        {candidato.fecha_entrevista}
+                        {new Date(candidato.fecha).toLocaleDateString('es-ES')}
                       </p>
                     </div>
                     {candidato.evaluacion_previa && (

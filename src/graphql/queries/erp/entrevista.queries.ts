@@ -1,6 +1,6 @@
 export const GET_ENTREVISTAS = `
-  query {
-    obtenerEntrevistas {
+  query($limit: Int) {
+    entrevistas(limit: $limit) {
       id
       fecha
       duracionMin
@@ -10,15 +10,17 @@ export const GET_ENTREVISTAS = `
       postulacion {
         id
         nombre
-        puestoActual
+        oferta {
+          titulo
+        }
       }
     }
   }
 `;
 
 export const GET_ENTREVISTA_POR_ID = `
-  query($id: String!) {
-    obtenerEntrevistaPorId(id: $id) {
+  query($id: UUID!) {
+    entrevista(id: $id) {
       id
       fecha
       duracionMin
@@ -28,7 +30,9 @@ export const GET_ENTREVISTA_POR_ID = `
       postulacion {
         id
         nombre
-        puestoActual
+        oferta {
+          titulo
+        }
       }
     }
   }
