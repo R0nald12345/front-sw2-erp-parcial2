@@ -15,18 +15,18 @@ interface CreateEmpresaResponse {
   createEmpresa: EmpresaType;
 }
 
-interface DeleteEmpresaResponse {
-  deleteEmpresa: boolean;
+interface UpdateEmpresaResponse {
+  actualizarEmpresa: EmpresaType;
 }
 
-interface UpdateEmpresaResponse {
-  updateEmpresa: EmpresaType;
+interface DeleteEmpresaResponse {
+  deleteEmpresa: {
+    success: boolean;
+    message: string;
+  };
 }
 
 export const empresaService = {
-  /**
-   * Obtener todas las empresas
-   */
   async getEmpresas(limit: number = 10): Promise<EmpresaType[]> {
     try {
       console.log(`\n🏢 SERVICE: Fetching empresas with limit: ${limit}`);
@@ -34,8 +34,8 @@ export const empresaService = {
       const result = await executeGraphQL<GetEmpresasResponse>(
         EmpresaQueries.GET_EMPRESAS,
         { limit },
-        'GetEmpresas',  // Nombre de operación
-        true  // isQuery
+        'GetEmpresas',
+        true
       );
 
       if (!result?.empresas) {
@@ -51,9 +51,6 @@ export const empresaService = {
     }
   },
 
-  /**
-   * Obtener empresa por ID
-   */
   async getEmpresaPorId(id: string): Promise<EmpresaType | null> {
     try {
       console.log(`\n🏢 SERVICE: Fetching empresa with id: ${id}`);
@@ -82,9 +79,6 @@ export const empresaService = {
     }
   },
 
-  /**
-   * Crear nueva empresa
-   */
   async crearEmpresa(input: CreateEmpresaInput): Promise<EmpresaType> {
     try {
       console.log(`\n🆕 SERVICE: Creating empresa:`, input.nombre);
@@ -102,7 +96,7 @@ export const empresaService = {
         EmpresaMutations.CREAR_EMPRESA,
         input,
         'CrearEmpresa',
-        false  // isMutation
+        false
       );
 
       if (!result?.createEmpresa) {
@@ -117,9 +111,6 @@ export const empresaService = {
     }
   },
 
-  /**
-   * Actualizar empresa
-   */
   async actualizarEmpresa(input: UpdateEmpresaInput): Promise<EmpresaType> {
     try {
       console.log(`\n✏️ SERVICE: Updating empresa: ${input.id}`);
@@ -135,21 +126,18 @@ export const empresaService = {
         false
       );
 
-      if (!result?.updateEmpresa) {
+      if (!result?.actualizarEmpresa) {
         throw new Error('Error updating empresa');
       }
 
-      console.log('✅ Empresa updated:', result.updateEmpresa.id);
-      return result.updateEmpresa;
+      console.log('✅ Empresa updated:', result.actualizarEmpresa.id);
+      return result.actualizarEmpresa;
     } catch (error) {
       console.error(`❌ Error updating empresa:`, error);
       throw error;
     }
   },
 
-  /**
-   * Eliminar empresa
-   */
   async eliminarEmpresa(id: string): Promise<boolean> {
     try {
       console.log(`\n🗑️ SERVICE: Deleting empresa: ${id}`);
@@ -165,11 +153,11 @@ export const empresaService = {
         false
       );
 
-      if (result?.deleteEmpresa !== true) {
-        throw new Error('Error deleting empresa');
+      if (!result?.deleteEmpresa?.success) {
+        throw new Error(result?.deleteEmpresa?.message || 'Error deleting empresa');
       }
 
-      console.log('✅ Empresa deleted successfully');
+      console.log('✅ Empresa deleted:', result.deleteEmpresa.message);
       return true;
     } catch (error) {
       console.error(`❌ Error deleting empresa ${id}:`, error);
