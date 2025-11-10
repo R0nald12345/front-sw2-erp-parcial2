@@ -1,74 +1,85 @@
+"use client"
 
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { BiEditAlt } from "react-icons/bi";
 import { IoEyeSharp } from "react-icons/io5";
-import Swal from "sweetalert2";
+import { EmpresaType } from "@/src/types/erp/empresa.types";
 
-const ListadoEmpresa = () => {
+interface ListadoEmpresaProps {
+  empresa: EmpresaType;
+  onDelete?: (id: string) => Promise<void>;
+  onEdit?: (empresa: EmpresaType) => void;
+  onView?: (empresa: EmpresaType) => void;
+}
 
-//     const handleDeleteCentroSalud = async (id) => {
-//     try {
-//       const result = await Swal.fire({
-//         title: "Deseas Eliminar?",
-//         text: "Si eliminas no podrás recuperarlo!",
-//         icon: "warning",
-//         showCancelButton: true,
-//         confirmButtonColor: "#3085d6",
-//         cancelButtonColor: "#d33",
-//         confirmButtonText: "Si, quiero Eliminar!",
-//       });
+const ListadoEmpresa = ({ empresa, onDelete, onEdit, onView }: ListadoEmpresaProps) => {
+  const handleDeleteClick = async () => {
+    if (onDelete) {
+      try {
+        console.log('🗑️ Eliminar empresa:', empresa.id);
+        await onDelete(empresa.id);
+      } catch (error) {
+        console.error('Error al eliminar:', error);
+      }
+    }
+  };
 
-//       if (result.isConfirmed) {
-//         const responde = await deleteDatoCentroSalud(id);
-//         // setDatosCentroTuristicos( 
-//         //   datosCentroTuristicos.filter((element) => element.id !== id)
-//         // );
-        
-//         setDatosCentroSalud(prevState => prevState.filter((element) => element.id !== id));
+  const handleEditClick = () => {
+    if (onEdit) {
+      console.log('✏️ Editar empresa:', empresa.id);
+      onEdit(empresa);
+    }
+  };
 
-//         Swal.fire({
-//           title: "Eliminado!",
-//           text: "Eliminado Correctamente.",
-//           icon: "success",
-//         });
-//       }
-//     } catch (error) {
-//       console.log("Error en el Componente Lista_CentroTuristicos", error);
-//     }
-//   }
+  const handleViewClick = () => {
+    if (onView) {
+      console.log('👁️ Ver empresa:', empresa.id);
+      onView(empresa);
+    }
+  };
 
   return (
-     <ul className='w-full flex gap-1 rounded-xl mb-3 bg-white shadow-xl'>
-              <li className="w-[32%] font-semibold text-start px-3 py-2">
-                NOmbre
-              </li>
-              <li className="w-[33%] font-semibold text-start px-3 py-2 flex items-center">
-                Direccion
-              </li>
-              <li className="w-[12%] font-semibold px-3 py-2 flex items-center justify-center">
-                Horario
-              </li>
-              <li className="w-[8%] font-semibold px-3 py-2 flex items-center justify-center">
-                Nivel
-              </li>
-              <li className='w-[15%] flex items-center'>
-                <div className='flex justify-between w-full px-2 cursor-pointer'>
-                  <IoEyeSharp
-                    // onClick={() => navigate(`/inicio/centrosalud/detalles/${id}`)}
-                    className="text-3xl p-1 rounded-lg bg-black text-white"
-                  />
-                  <BiEditAlt
-                    // onClick={() => changeRutaEditarFormulario(id)}
-                    className="text-3xl p-1 rounded-xl bg-green-900 text-white"
-                  />
-                  <RiDeleteBin5Line
-                    // onClick={() => handleDeleteCentroSalud(id)}
-                    className="text-3xl text-red-700"
-                  />
-                </div>
-              </li>
-            </ul>
-
+    <ul className='w-full flex gap-1 rounded-xl mb-3 bg-white shadow-md hover:shadow-lg transition-all duration-200'>
+      <li className="w-[28%] font-semibold text-start px-3 py-3 truncate">
+        {empresa.nombre}
+      </li>
+      <li className="w-[30%] font-semibold text-start px-3 py-3 flex items-center truncate">
+        {empresa.correo}
+      </li>
+      <li className="w-[15%] font-semibold px-3 py-3 flex items-center justify-center">
+        {empresa.rubro}
+      </li>
+      <li className="w-[12%] font-semibold px-3 py-3 flex items-center justify-center">
+        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+          {empresa.ofertas?.length || 0}
+        </span>
+      </li>
+      <li className='w-[15%] flex items-center justify-end pr-2'>
+        <div className='flex justify-between gap-2 cursor-pointer'>
+          <button
+            onClick={handleViewClick}
+            className="p-2 rounded-lg bg-black text-white hover:bg-gray-800 transition tooltip"
+            title="Ver detalles"
+          >
+            <IoEyeSharp className="text-lg" />
+          </button>
+          <button
+            onClick={handleEditClick}
+            className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition tooltip"
+            title="Editar"
+          >
+            <BiEditAlt className="text-lg" />
+          </button>
+          <button
+            onClick={handleDeleteClick}
+            className="p-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition tooltip"
+            title="Eliminar"
+          >
+            <RiDeleteBin5Line className="text-lg" />
+          </button>
+        </div>
+      </li>
+    </ul>
   )
 }
 

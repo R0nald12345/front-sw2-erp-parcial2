@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_CONFIG } from '../constants/api.constants';
+// import { API_CONFIG } from '@/constants/api.constants';
 
 // Instancia de Axios para API REST Gateway
 export const apiClient = axios.create({
@@ -19,20 +20,16 @@ export const graphqlClient = axios.create({
 
 // Instancias específicas por microservicio
 export const microserviceClients = {
-  rrhh: axios.create({
-    baseURL: API_CONFIG.MICROSERVICES.RRHH.BASE_URL,
+  erp: axios.create({
+    baseURL: API_CONFIG.MICROSERVICES.ERP.BASE_URL,
     headers: { 'Content-Type': 'application/json' },
   }),
   bi: axios.create({
     baseURL: API_CONFIG.MICROSERVICES.BI.BASE_URL,
     headers: { 'Content-Type': 'application/json' },
   }),
-  erp: axios.create({
-    baseURL: API_CONFIG.MICROSERVICES.ERP.BASE_URL,
-    headers: { 'Content-Type': 'application/json' },
-  }),
-  ai: axios.create({
-    baseURL: API_CONFIG.MICROSERVICES.AI.BASE_URL,
+  ml: axios.create({
+    baseURL: API_CONFIG.MICROSERVICES.ML.BASE_URL,
     headers: { 'Content-Type': 'application/json' },
   }),
 };

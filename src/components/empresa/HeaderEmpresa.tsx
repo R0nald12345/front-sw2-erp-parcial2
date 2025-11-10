@@ -1,45 +1,64 @@
 "use client"
 
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { useState } from "react";
+import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
 
-const HeaderEmpresa = () => {
+interface HeaderEmpresaProps {
+  onSearch?: (term: string) => void;
+  onAgregarNuevo?: () => void;
+}
+
+const HeaderEmpresa = ({ onSearch, onAgregarNuevo }: HeaderEmpresaProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
+
+  const handleAgregarClick = () => {
+    console.log('➕ Agregar nueva empresa');
+    if (onAgregarNuevo) {
+      onAgregarNuevo();
+    }
+  };
+
   return (
     <>
-        {/* Parte Superrior */}
-      <section className="flex-col justify-center p-2 bg-red w-full">
-        <h3 className="text-3xl font-bold text-center  mt-3">
-          Empresas
+      <section className="flex-col justify-center p-2 bg-gray-50 w-full rounded-t-xl">
+        <h3 className="text-3xl font-bold text-center mt-3">
+          📋 Gestión de Empresas
         </h3>
 
-        <section className="md:flex md:justify-between md:px-2 bg-red gap-3 ">
-          <div className=" mt-5 col-span-4 flex items-center  justify-end gap-1 md:gap-3">
-            <p className="font-new-font font-new-bold ">Nombre</p>
-            <div className="w-full flex bg-gray-300 border border-black rounded-xl px-2 bg-red">
-              <FaMagnifyingGlass className="mt-2 bg-red" />
+        <section className="md:flex md:justify-between md:px-2 gap-3 mt-5">
+          <div className="col-span-4 flex items-center justify-end gap-1 md:gap-3 md:flex-1">
+            <p className="font-semibold text-gray-700 hidden sm:block">Buscar:</p>
+            <div className="w-full flex bg-white border border-gray-300 rounded-xl px-3 py-2 shadow-sm hover:shadow-md transition-shadow">
+              <FaMagnifyingGlass className="text-gray-500 mt-1" />
               <input
                 type="text"
-                placeholder="Buscar"
-                // onChange={handleFiltroCambio}
-                className="w-full font-semibold rounded-xl py-1 bg-gray-300 px-1 outline-none"
+                placeholder="Buscar por nombre, correo o rubro..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full font-medium rounded-lg py-1 bg-white px-3 outline-none text-gray-700"
               />
             </div>
           </div>
 
-           
-
-            <button
-              className="mt-5 md:w-1/3 text-white font-new-font font-new-bold bg-green-600 rounded-lg py-3 px-2 w-full"
-              // onClick={() => navigate("/inicio/centrosalud/agregarnuevo")}
-            >
-              Agregar Nuevo +
-            </button>
-
-
-         
+          <button
+            onClick={handleAgregarClick}
+            className="mt-5 md:mt-0 md:w-auto text-white font-semibold bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg py-2 px-6 w-full transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+          >
+            <FaPlus size={16} />
+            Agregar Nuevo
+          </button>
         </section>
       </section>
-     
     </>
   )
 }
+
 export default HeaderEmpresa
