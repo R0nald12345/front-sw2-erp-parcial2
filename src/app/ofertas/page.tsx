@@ -1,107 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { JobOffersCard } from "../../components/ofertaTrabajo/job-offers-card";
 import { ApplicationModal } from "../../components/ofertaTrabajo/application-modal";
-import { Search, Briefcase } from "lucide-react";
+import { Search, Briefcase, Loader } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { useOfertaTrabajo } from "@/src/hooks/erp/useOfertaTrabajo";
-
-const mockOffers = [
-  {
-    id: "59f1c0c3-fcf6-483d-86ba-1cee74363434",
-    titulo: "Desarrollador Full Stack",
-    descripcion: "Buscamos desarrollador con experiencia en Spring Boot y React",
-    salario: 5000,
-    ubicacion: "La Paz, Bolivia",
-    requisitos: "Java, Spring Boot, React, PostgreSQL",
-    fechaPublicacion: "2025-11-01",
-    empresa: {
-      id: "c02dff4b-7550-42fb-9653-c8145102939b",
-      nombre: "BioTech La Paz",
-      correo: "info@biotech17622105151.com.bo",
-      rubro: "Blockchain",
-    },
-    postulaciones: [
-      {
-        id: "2748b952-3390-4fe2-9872-a6fcc5774585",
-        nombre: "Joseph Benitez Arroyo",
-        estado: "PENDIENTE",
-      },
-    ],
-  },
-  {
-    id: "0f73f3aa-15fe-4ea1-9cec-0ba8755f2174",
-    titulo: "Ingeniero de Software",
-    descripcion: "Implementación de soluciones de software escalables y eficientes para diversos sectores",
-    salario: 9090.52,
-    ubicacion: "Cochabamba",
-    requisitos: "Experiencia en cloud computing, microservicios y arquitecturas distribuidas modernas",
-    fechaPublicacion: "2024-04-05",
-    empresa: {
-      id: "c02dff4b-7550-42fb-9653-c8145102939b",
-      nombre: "BioTech La Paz",
-      correo: "info@biotech17622105151.com.bo",
-      rubro: "Blockchain",
-    },
-    postulaciones: [
-      {
-        id: "20c90efa-5ff8-4797-9e6f-3d9390b10472",
-        nombre: "Mauricio Alejandro Sánchez Soto",
-        estado: "Aceptada",
-      },
-      {
-        id: "c9cf22c2-aef6-4942-93ba-c78aae13f0ce",
-        nombre: "Gladys Carmen Ticona Chura",
-        estado: "Aceptada",
-      },
-    ],
-  },
-  {
-    id: "3c4e5f6a-7b8c-9d0e-1f2g-3h4i5j6k7l8m",
-    titulo: "Especialista en UX/UI Design",
-    descripcion: "Diseña interfaces elegantes para plataforma de fintech de última generación",
-    salario: 6500,
-    ubicacion: "Santa Cruz",
-    requisitos: "Figma, Adobe XD, Prototipado, Design Systems",
-    fechaPublicacion: "2025-10-28",
-    empresa: {
-      id: "d03egg5c-8551-42fb-9653-c8145102939b",
-      nombre: "TechVision Inc",
-      correo: "careers@techvision.com.bo",
-      rubro: "FinTech",
-    },
-    postulaciones: [],
-  },
-  {
-    id: "4d5f6g7h-8i9j-0k1l-2m3n-4o5p6q7r8s9t",
-    titulo: "DevOps Engineer",
-    descripcion: "Gestiona infraestructura en la nube y automatiza procesos de deployment",
-    salario: 7800,
-    ubicacion: "La Paz, Bolivia",
-    requisitos: "Kubernetes, Docker, AWS, CI/CD pipelines",
-    fechaPublicacion: "2025-10-25",
-    empresa: {
-      id: "e04fhh6d-9662-52fc-0754-d9256213a50c",
-      nombre: "CloudNative Solutions",
-      correo: "jobs@cloudnative.bo",
-      rubro: "Cloud Computing",
-    },
-    postulaciones: [],
-  },
-];
+import Swal from "sweetalert2";
 
 export default function OfertasPage() {
-  const [selectedOffer, setSelectedOffer] = useState<(typeof mockOffers)[0] | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<any | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [applications, setApplications] = useState<
     Array<{ offerId: string; name: string; email: string; phone: string }>
   >([]);
 
-  const { ofertas } = useOfertaTrabajo();
-  console.log("📊 Ofertas:", ofertas);
+  const { ofertas, loading, error, refetch } = useOfertaTrabajo();
 
-  const handleOpenOffer = (offer: (typeof mockOffers)[0]) => {
+  useEffect(() => {
+    if (error) {
+      Swal.fire({
+        title: "Error",
+        text: error,
+        icon: "error",
+      });
+    }
+  }, [error]);
+
+  const handleOpenOffer = (offer: any) => {
     setSelectedOffer(offer);
   };
 
@@ -109,43 +35,76 @@ export default function OfertasPage() {
     setSelectedOffer(null);
   };
 
-  const handleSubmitApplication = (formData: { name: string; email: string; phone: string; cv: File | null }) => {
+  const handleSubmitApplication = async (formData: {
+    name: string;
+    email: string;
+    phone: string;
+    cv: File | null;
+  }) => {
     if (selectedOffer) {
-      setApplications([
-        ...applications,
-        {
-          offerId: selectedOffer.id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-        },
-      ]);
-      setSelectedOffer(null);
+      try {
+        // Aquí puedes agregar la lógica para enviar la postulación al API
+        setApplications([
+          ...applications,
+          {
+            offerId: selectedOffer.id,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+          },
+        ]);
+
+        Swal.fire({
+          title: "¡Éxito!",
+          text: "Tu postulación ha sido enviada correctamente",
+          icon: "success",
+        });
+
+        setSelectedOffer(null);
+      } catch (error) {
+        console.error("Error submitting application:", error);
+        Swal.fire({
+          title: "Error",
+          text: "Hubo un error al enviar tu postulación",
+          icon: "error",
+        });
+      }
     }
   };
 
-  const filteredOffers = mockOffers.filter(
+  // Filtrar ofertas basado en la búsqueda
+  const filteredOffers = ofertas.filter(
     (offer) =>
       offer.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      offer.empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      offer.ubicacion.toLowerCase().includes(searchTerm.toLowerCase())
+      offer.empresa?.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      offer.ubicacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      offer.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Obtener postulaciones del usuario
   const userApplications = applications;
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-center gap-3 mb-4">
           <Briefcase className="w-8 h-8" />
-          <span className="text-sm font-semibold tracking-widest opacity-90">OPORTUNIDADES LABORALES</span>
+          <span className="text-sm font-semibold tracking-widest opacity-90">
+            OPORTUNIDADES LABORALES
+          </span>
         </div>
-        <h1 className="text-5xl font-bold mb-2 text-pretty">Encuentra tu próxima oportunidad</h1>
+        <h1 className="text-5xl font-bold mb-2 text-pretty">
+          Encuentra tu próxima oportunidad
+        </h1>
         <p className="text-lg opacity-90 max-w-2xl">
-          Explora ofertas de empleo exclusivas y únete a equipos innovadores en tecnología
+          Explora{" "}
+          <span className="font-bold text-primary">{ofertas.length}</span>{" "}
+          ofertas de empleo exclusivas y únete a equipos innovadores en tecnología
         </p>
       </div>
 
+      {/* Buscador */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-12">
           <div className="relative">
@@ -160,6 +119,7 @@ export default function OfertasPage() {
           </div>
         </div>
 
+        {/* Sección de Ofertas */}
         <div className="mb-16">
           <div className="flex items-center gap-2 mb-8">
             <h2 className="text-3xl font-bold">Ofertas disponibles</h2>
@@ -168,55 +128,105 @@ export default function OfertasPage() {
             </span>
           </div>
 
-          {filteredOffers.length > 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-4">
+              <Loader className="w-12 h-12 animate-spin text-primary" />
+              <p className="text-text-secondary">Cargando ofertas...</p>
+            </div>
+          ) : filteredOffers.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {filteredOffers.map((offer) => (
-                <JobOffersCard key={offer.id} offer={offer} onApply={() => handleOpenOffer(offer)} />
+                <JobOffersCard
+                  key={offer.id}
+                  offer={offer}
+                  onApply={() => handleOpenOffer(offer)}
+                />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-text-secondary text-lg">No encontramos ofertas que coincidan con tu búsqueda</p>
+            <div className="text-center py-12 bg-surface border-2 border-border rounded-xl">
+              <p className="text-text-secondary text-lg mb-4">
+                No encontramos ofertas que coincidan con tu búsqueda
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  refetch();
+                }}
+                className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Ver todas las ofertas
+              </button>
             </div>
           )}
         </div>
 
+        {/* Sección de Mis Postulaciones */}
         {userApplications.length > 0 && (
           <div className="border-t-2 border-border pt-12">
             <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
               <span className="w-1 h-8 bg-accent rounded-full"></span>
               Mis Postulaciones
             </h2>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {userApplications.map((app, idx) => {
-                const offer = mockOffers.find((o) => o.id === app.offerId);
+                const offer = ofertas.find((o) => o.id === app.offerId);
                 return (
                   <div
                     key={idx}
                     className="p-6 bg-surface border-2 border-border rounded-xl hover:shadow-lg hover:border-accent transition-smooth group"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-semibold text-primary group-hover:text-primary transition-smooth">
-                        {app.name}
-                      </h3>
-                      <span className="inline-block bg-success/10 text-success px-3 py-1 rounded-full text-xs font-semibold">
+                      <div>
+                        <h3 className="font-semibold text-primary group-hover:text-primary transition-smooth">
+                          {app.name}
+                        </h3>
+                        <p className="text-xs text-text-tertiary mt-1">
+                          {app.email}
+                        </p>
+                      </div>
+                      <span className="inline-block bg-success/10 text-success px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
                         Enviada
                       </span>
                     </div>
-                    <p className="text-sm text-text-secondary mb-3">
-                      Oferta: <span className="font-semibold text-primary">{offer?.titulo}</span>
-                    </p>
-                    <p className="text-xs text-text-tertiary">{app.email}</p>
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-sm text-text-secondary mb-1">
+                        Oferta:
+                      </p>
+                      <p className="font-semibold text-primary text-sm">
+                        {offer?.titulo}
+                      </p>
+                      <p className="text-xs text-text-tertiary mt-2">
+                        💼 {offer?.empresa?.nombre}
+                      </p>
+                      <p className="text-xs text-text-tertiary">
+                        📍 {offer?.ubicacion}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
         )}
+
+        {/* Si no hay postulaciones */}
+        {userApplications.length === 0 && !loading && (
+          <div className="mt-12 text-center">
+            <p className="text-text-secondary text-lg">
+              Aún no has enviado ninguna postulación
+            </p>
+          </div>
+        )}
       </div>
 
+      {/* Modal de Postulación */}
       {selectedOffer && (
-        <ApplicationModal offer={selectedOffer} onClose={handleCloseModal} onSubmit={handleSubmitApplication} />
+        <ApplicationModal
+          offer={selectedOffer}
+          onClose={handleCloseModal}
+          onSubmit={handleSubmitApplication}
+        />
       )}
     </div>
   );

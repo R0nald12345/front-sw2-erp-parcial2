@@ -1,5 +1,5 @@
 export const CREAR_OFERTA_TRABAJO = `
-  mutation(
+  mutation CreateOfertaTrabajo(
     $titulo: String!
     $descripcion: String!
     $salario: Float!
@@ -8,7 +8,7 @@ export const CREAR_OFERTA_TRABAJO = `
     $fechaPublicacion: String!
     $empresaId: String!
   ) {
-    crearOfertaTrabajo(
+    createOfertaTrabajo(
       titulo: $titulo
       descripcion: $descripcion
       salario: $salario
@@ -22,14 +22,47 @@ export const CREAR_OFERTA_TRABAJO = `
       descripcion
       salario
       empresa {
+        id
         nombre
       }
+      createdAt
+    }
+  }
+`;
+
+export const ACTUALIZAR_OFERTA_TRABAJO = `
+  mutation UpdateOfertaTrabajo(
+    $id: String!
+    $titulo: String!
+    $descripcion: String!
+    $salario: Float!
+    $ubicacion: String!
+    $requisitos: String!
+    $fechaPublicacion: String!
+  ) {
+    updateOfertaTrabajo(
+      id: $id
+      titulo: $titulo
+      descripcion: $descripcion
+      salario: $salario
+      ubicacion: $ubicacion
+      requisitos: $requisitos
+      fechaPublicacion: $fechaPublicacion
+    ) {
+      id
+      titulo
+      descripcion
+      salario
+      updatedAt
     }
   }
 `;
 
 export const ELIMINAR_OFERTA_TRABAJO = `
-  mutation($id: String!) {
-    eliminarOfertaTrabajo(id: $id)
+  mutation DeleteOfertaTrabajo($id: String!) {
+    deleteOfertaTrabajo(id: $id) {
+      success
+      message
+    }
   }
 `;

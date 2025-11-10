@@ -1,32 +1,37 @@
 export const GET_OFERTAS_TRABAJO = `
-query {
-  ofertasTrabajo(limit: 10) {
-    id
-    titulo
-    descripcion
-    salario
-    ubicacion
-    requisitos
-    fechaPublicacion
-    createdAt
-    updatedAt
-    empresa {
+  query GetOfertasTrabajo($limit: Int) {
+    ofertasTrabajo(limit: $limit) {
       id
-      nombre
-      correo
-      rubro
-    }
-    postulaciones(limit: 10) {
-      id
-      nombre
-      estado
+      titulo
+      descripcion
+      salario
+      ubicacion
+      requisitos
+      fechaPublicacion
+      createdAt
+      updatedAt
+      empresa {
+        id
+        nombre
+        correo
+        rubro
+      }
+      postulaciones(limit: 10) {
+        id
+        nombre
+        estado
+      }
+      visualizaciones(limit: 10) {
+        id
+        fechaVisualizacion
+        origen
+      }
     }
   }
-}
 `;
 
 export const GET_OFERTA_TRABAJO_POR_ID = `
-  query($id: String!) {
+  query GetOfertaTrabajoPorId($id: String!) {
     ofertaTrabajo(id: $id) {
       id
       titulo
@@ -35,11 +40,23 @@ export const GET_OFERTA_TRABAJO_POR_ID = `
       ubicacion
       requisitos
       fechaPublicacion
+      createdAt
+      updatedAt
       empresa {
         id
         nombre
         correo
         rubro
+      }
+      postulaciones(limit: 10) {
+        id
+        nombre
+        estado
+      }
+      visualizaciones(limit: 10) {
+        id
+        fechaVisualizacion
+        origen
       }
     }
   }
