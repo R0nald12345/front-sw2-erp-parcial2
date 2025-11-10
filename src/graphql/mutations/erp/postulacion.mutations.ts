@@ -1,5 +1,5 @@
 export const CREAR_POSTULACION = `
-  mutation(
+  mutation CreatePostulacion(
     $nombre: String!
     $aniosExperiencia: Int!
     $nivelEducacion: String!
@@ -14,7 +14,7 @@ export const CREAR_POSTULACION = `
     $email: String!
     $ofertaId: String!
   ) {
-    crearPostulacion(
+    createPostulacion(
       nombre: $nombre
       aniosExperiencia: $aniosExperiencia
       nivelEducacion: $nivelEducacion
@@ -34,7 +34,9 @@ export const CREAR_POSTULACION = `
       puestoActual
       telefono
       email
+      createdAt
       oferta {
+        id
         titulo
       }
     }
@@ -42,7 +44,20 @@ export const CREAR_POSTULACION = `
 `;
 
 export const ELIMINAR_POSTULACION = `
-  mutation($id: String!) {
-    eliminarPostulacion(id: $id)
+  mutation DeletePostulacion($id: String!) {
+    deletePostulacion(id: $id) {
+      success
+      message
+    }
+  }
+`;
+
+export const ACTUALIZAR_ESTADO_POSTULACION = `
+  mutation UpdateEstadoPostulacion($id: String!, $estado: String!) {
+    updatePostulacion(id: $id, estado: $estado) {
+      id
+      estado
+      updatedAt
+    }
   }
 `;

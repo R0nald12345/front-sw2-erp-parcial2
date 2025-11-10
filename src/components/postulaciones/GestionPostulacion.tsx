@@ -1,142 +1,108 @@
 "use client"
 
-import { useState } from 'react';
-import { Search, Filter, Download, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, Mail, Phone, FileText, Calendar } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Filter, Download, Eye, Trash2, CheckCircle, XCircle, Clock, Mail, Phone, FileText, Calendar, AlertCircle, Loader, X } from 'lucide-react';
+import { usePostulacion } from '@/src/hooks/erp/usePostulacion';
+import { PostulacionType } from '@/src/types/erp/postulacion.types';
+import Swal from 'sweetalert2';
 
 const GestionPostulacion = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('Todos');
-  const [selectedPostulacion, setSelectedPostulacion] = useState(null);
+  const [selectedPostulacion, setSelectedPostulacion] = useState<PostulacionType | null>(null);
 
-  const postulaciones = [
-    {
-      id: 1,
-      nombre: 'Juan Carlos Pérez',
-      email: 'juan.perez@email.com',
-      telefono: '+591 7123-4567',
-      puesto: 'Desarrollador Full Stack',
-      empresa: 'Tech Solutions S.A.',
-      experiencia: '5 años',
-      educacion: 'Ingeniería en Sistemas',
-      estado: 'En Revisión',
-      fecha: '2024-11-05',
-      urlCV: '#',
-      habilidades: ['React', 'Node.js', 'MongoDB', 'AWS'],
-      idiomas: ['Español', 'Inglés'],
-      certificaciones: ['AWS Certified', 'React Advanced']
-    },
-    {
-      id: 2,
-      nombre: 'María González',
-      email: 'maria.gonzalez@email.com',
-      telefono: '+591 7234-5678',
-      puesto: 'Diseñadora UX/UI',
-      empresa: 'Innovasoft',
-      experiencia: '3 años',
-      educacion: 'Diseño Gráfico',
-      estado: 'Entrevista',
-      fecha: '2024-11-04',
-      urlCV: '#',
-      habilidades: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
-      idiomas: ['Español', 'Inglés', 'Portugués'],
-      certificaciones: ['Google UX Design']
-    },
-    {
-      id: 3,
-      nombre: 'Roberto Silva',
-      email: 'roberto.silva@email.com',
-      telefono: '+591 7345-6789',
-      puesto: 'Analista de Datos',
-      empresa: 'DataCorp',
-      experiencia: '4 años',
-      educacion: 'Estadística',
-      estado: 'Ofertado',
-      fecha: '2024-11-03',
-      urlCV: '#',
-      habilidades: ['Python', 'SQL', 'Tableau', 'Power BI'],
-      idiomas: ['Español', 'Inglés'],
-      certificaciones: ['Microsoft Data Analyst', 'Tableau Desktop']
-    },
-    {
-      id: 4,
-      nombre: 'Ana Martínez',
-      email: 'ana.martinez@email.com',
-      telefono: '+591 7456-7890',
-      puesto: 'Project Manager',
-      empresa: 'Consulting Group',
-      experiencia: '6 años',
-      educacion: 'Administración de Empresas',
-      estado: 'Pendiente',
-      fecha: '2024-11-06',
-      urlCV: '#',
-      habilidades: ['Scrum', 'Agile', 'JIRA', 'MS Project'],
-      idiomas: ['Español', 'Inglés', 'Francés'],
-      certificaciones: ['PMP', 'Scrum Master']
-    },
-    {
-      id: 5,
-      nombre: 'Carlos Ramírez',
-      email: 'carlos.ramirez@email.com',
-      telefono: '+591 7567-8901',
-      puesto: 'Marketing Digital',
-      empresa: 'StartUp Bolivia',
-      experiencia: '2 años',
-      educacion: 'Marketing',
-      estado: 'Contratado',
-      fecha: '2024-11-01',
-      urlCV: '#',
-      habilidades: ['SEO', 'Google Ads', 'Social Media', 'Analytics'],
-      idiomas: ['Español', 'Inglés'],
-      certificaciones: ['Google Ads', 'HubSpot Marketing']
-    },
-    {
-      id: 6,
-      nombre: 'Laura Torres',
-      email: 'laura.torres@email.com',
-      telefono: '+591 7678-9012',
-      puesto: 'Desarrollador Mobile',
-      empresa: 'Tech Solutions S.A.',
-      experiencia: '4 años',
-      educacion: 'Ingeniería en Sistemas',
-      estado: 'Rechazado',
-      fecha: '2024-10-30',
-      urlCV: '#',
-      habilidades: ['React Native', 'Flutter', 'iOS', 'Android'],
-      idiomas: ['Español'],
-      certificaciones: ['Android Associate Developer']
-    }
-  ];
+  // Hook para obtener postulaciones reales
+  const { postulaciones, loading, error, refetch, eliminarPostulacion } = usePostulacion(15);
 
-  const getEstadoColor = (estado) => {
-    const colores = {
+  const getEstadoColor = (estado: string) => {
+    const colores: Record<string, string> = {
+      'PENDIENTE': 'bg-yellow-100 text-yellow-800 border-yellow-300',
       'Pendiente': 'bg-yellow-100 text-yellow-800 border-yellow-300',
       'En Revisión': 'bg-blue-100 text-blue-800 border-blue-300',
       'Entrevista': 'bg-purple-100 text-purple-800 border-purple-300',
+      'ENTREVISTA': 'bg-purple-100 text-purple-800 border-purple-300',
       'Ofertado': 'bg-green-100 text-green-800 border-green-300',
+      'OFERTADO': 'bg-green-100 text-green-800 border-green-300',
       'Contratado': 'bg-emerald-100 text-emerald-800 border-emerald-300',
-      'Rechazado': 'bg-red-100 text-red-800 border-red-300'
+      'CONTRATADO': 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      'Rechazado': 'bg-red-100 text-red-800 border-red-300',
+      'RECHAZADO': 'bg-red-100 text-red-800 border-red-300'
     };
     return colores[estado] || 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
-  const getEstadoIcon = (estado) => {
-    switch(estado) {
-      case 'Contratado': return <CheckCircle className="w-4 h-4" />;
-      case 'Rechazado': return <XCircle className="w-4 h-4" />;
-      case 'Pendiente': return <Clock className="w-4 h-4" />;
+  const getEstadoIcon = (estado: string) => {
+    const estadoUpper = estado.toUpperCase();
+    switch(estadoUpper) {
+      case 'CONTRATADO': return <CheckCircle className="w-4 h-4" />;
+      case 'RECHAZADO': return <XCircle className="w-4 h-4" />;
+      case 'PENDIENTE': return <Clock className="w-4 h-4" />;
       default: return <FileText className="w-4 h-4" />;
     }
   };
 
-  const filteredPostulaciones = postulaciones.filter(p => {
-    const matchSearch = p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       p.puesto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       p.empresa.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchEstado = filterEstado === 'Todos' || p.estado === filterEstado;
-    return matchSearch && matchEstado;
-  });
+  const filteredPostulaciones = useMemo(() => {
+    return postulaciones.filter(p => {
+      const matchSearch = 
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.puestoActual.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.oferta?.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.email.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchEstado = filterEstado === 'Todos' || p.estado === filterEstado;
+      return matchSearch && matchEstado;
+    });
+  }, [postulaciones, searchTerm, filterEstado]);
 
-  const estadosUnicos = ['Todos', ...new Set(postulaciones.map(p => p.estado))];
+  const estadosUnicos = useMemo(() => {
+    const estados = new Set(postulaciones.map(p => p.estado));
+    return ['Todos', ...Array.from(estados)];
+  }, [postulaciones]);
+
+  const handleDeletePostulacion = async (id: string) => {
+    try {
+      const result = await Swal.fire({
+        title: "¿Deseas Eliminar?",
+        text: "Si eliminas no podrás recuperarlo!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, quiero Eliminar!",
+      });
+
+      if (result.isConfirmed) {
+        await eliminarPostulacion(id);
+
+        Swal.fire({
+          title: "¡Eliminado!",
+          text: "Postulación eliminada correctamente.",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error eliminando postulación:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un error al eliminar la postulación",
+        icon: "error",
+      });
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const handleDownloadCV = (urlCv: string) => {
+    if (urlCv) {
+      window.open(urlCv, '_blank');
+    }
+  };
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -147,11 +113,22 @@ const GestionPostulacion = () => {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestión de Postulaciones</h1>
             <p className="text-gray-600">Administra y revisa los candidatos del proceso de selección</p>
           </div>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg hover:shadow-xl">
+          <button 
+            onClick={refetch}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
+          >
             <Download className="w-5 h-5" />
-            Exportar
+            Actualizar
           </button>
         </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5" />
+            {error}
+          </div>
+        )}
 
         {/* Filtros y Búsqueda */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
@@ -160,7 +137,7 @@ const GestionPostulacion = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Buscar por nombre, puesto o empresa..."
+                placeholder="Buscar por nombre, puesto, email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -179,161 +156,208 @@ const GestionPostulacion = () => {
               </select>
             </div>
           </div>
-        </div>
-
-        {/* Tabla de Postulaciones */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Candidato</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Puesto</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Empresa</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Experiencia</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredPostulaciones.map((postulacion) => (
-                  <tr key={postulacion.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="font-semibold text-gray-900">{postulacion.nombre}</div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                          <Mail className="w-3 h-3" />
-                          {postulacion.email}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {postulacion.telefono}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{postulacion.puesto}</div>
-                      <div className="text-sm text-gray-500">{postulacion.educacion}</div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{postulacion.empresa}</td>
-                    <td className="px-6 py-4 text-gray-700">{postulacion.experiencia}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${getEstadoColor(postulacion.estado)}`}>
-                        {getEstadoIcon(postulacion.estado)}
-                        {postulacion.estado}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{postulacion.fecha}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => setSelectedPostulacion(postulacion)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Ver detalles"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Editar">
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-4 text-sm text-gray-600">
+            Mostrando <span className="font-semibold">{filteredPostulaciones.length}</span> de <span className="font-semibold">{postulaciones.length}</span> postulaciones
           </div>
         </div>
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-12 gap-4 bg-white rounded-xl shadow-lg">
+            <Loader className="w-12 h-12 animate-spin text-blue-600" />
+            <p className="text-gray-600">Cargando postulaciones...</p>
+          </div>
+        ) : filteredPostulaciones.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-xl shadow-lg">
+            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-600 text-lg mb-4">No hay postulaciones disponibles</p>
+            <button
+              onClick={refetch}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              Intentar nuevamente
+            </button>
+          </div>
+        ) : (
+          /* Tabla de Postulaciones */
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Candidato</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Puesto / Oferta</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Experiencia</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredPostulaciones.map((postulacion) => (
+                    <tr key={postulacion.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="font-semibold text-gray-900">{postulacion.nombre}</div>
+                          <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                            <Mail className="w-3 h-3" />
+                            {postulacion.email}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center gap-1">
+                            <Phone className="w-3 h-3" />
+                            {postulacion.telefono}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{postulacion.puestoActual}</div>
+                        <div className="text-sm text-gray-500">{postulacion.oferta?.titulo}</div>
+                        <div className="text-sm text-gray-500 font-medium">{postulacion.nivelEducacion}</div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">{postulacion.aniosExperiencia} años</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${getEstadoColor(postulacion.estado)}`}>
+                          {getEstadoIcon(postulacion.estado)}
+                          {postulacion.estado}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{formatDate(postulacion.fechaPostulacion)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => setSelectedPostulacion(postulacion)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Ver detalles"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDownloadCV(postulacion.urlCv)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Descargar CV"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeletePostulacion(postulacion.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Detalles */}
         {selectedPostulacion && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedPostulacion(null)}>
             <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-gray-200 sticky top-0 bg-white">
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">{selectedPostulacion.nombre}</h2>
-                    <p className="text-gray-600 mt-1">{selectedPostulacion.puesto}</p>
+                    <p className="text-gray-600 mt-1">{selectedPostulacion.puestoActual}</p>
                   </div>
-                  <button onClick={() => setSelectedPostulacion(null)} className="text-gray-400 hover:text-gray-600">
-                    <XCircle className="w-6 h-6" />
+                  <button 
+                    onClick={() => setSelectedPostulacion(null)} 
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
               </div>
               
               <div className="p-6 space-y-6">
-                <div className="grid grid-cols-2 gap-6">
+                {/* Información de Contacto */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-600 mb-2">Información de Contacto</h3>
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">📞 Información de Contacto</h3>
                     <div className="space-y-2">
                       <p className="text-sm flex items-center gap-2">
                         <Mail className="w-4 h-4 text-gray-400" />
-                        {selectedPostulacion.email}
+                        <a href={`mailto:${selectedPostulacion.email}`} className="text-blue-600 hover:underline">
+                          {selectedPostulacion.email}
+                        </a>
                       </p>
                       <p className="text-sm flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-400" />
-                        {selectedPostulacion.telefono}
+                        <a href={`tel:${selectedPostulacion.telefono}`} className="text-blue-600 hover:underline">
+                          {selectedPostulacion.telefono}
+                        </a>
                       </p>
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-600 mb-2">Información de Postulación</h3>
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">💼 Información de Postulación</h3>
                     <div className="space-y-2">
-                      <p className="text-sm"><span className="font-medium">Empresa:</span> {selectedPostulacion.empresa}</p>
+                      <p className="text-sm"><span className="font-medium">Oferta:</span> {selectedPostulacion.oferta?.titulo}</p>
+                      <p className="text-sm"><span className="font-medium">Empresa:</span> {selectedPostulacion.oferta?.empresa?.nombre}</p>
                       <p className="text-sm flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-gray-400" />
-                        {selectedPostulacion.fecha}
+                        {formatDate(selectedPostulacion.fechaPostulacion)}
                       </p>
                     </div>
                   </div>
                 </div>
 
+                {/* Experiencia y Educación */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Experiencia y Educación</h3>
-                  <p className="text-sm"><span className="font-medium">Experiencia:</span> {selectedPostulacion.experiencia}</p>
-                  <p className="text-sm mt-1"><span className="font-medium">Educación:</span> {selectedPostulacion.educacion}</p>
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">🎓 Experiencia y Educación</h3>
+                  <div className="space-y-2">
+                    <p className="text-sm"><span className="font-medium">Experiencia:</span> {selectedPostulacion.aniosExperiencia} años</p>
+                    <p className="text-sm"><span className="font-medium">Nivel Educativo:</span> {selectedPostulacion.nivelEducacion}</p>
+                  </div>
                 </div>
 
+                {/* Habilidades */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Habilidades</h3>
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">🛠️ Habilidades</h3>
                   <div className="flex flex-wrap gap-2">
-                    {selectedPostulacion.habilidades.map((hab, idx) => (
+                    {selectedPostulacion.habilidades.split(',').map((hab, idx) => (
                       <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                        {hab}
+                        {hab.trim()}
                       </span>
                     ))}
                   </div>
                 </div>
 
+                {/* Idiomas */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Idiomas</h3>
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">🌍 Idiomas</h3>
                   <div className="flex flex-wrap gap-2">
-                    {selectedPostulacion.idiomas.map((idioma, idx) => (
+                    {selectedPostulacion.idiomas.split(',').map((idioma, idx) => (
                       <span key={idx} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        {idioma}
+                        {idioma.trim()}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Certificaciones</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedPostulacion.certificaciones.map((cert, idx) => (
-                      <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                        {cert}
-                      </span>
-                    ))}
+                {/* Certificaciones */}
+                {selectedPostulacion.certificaciones && selectedPostulacion.certificaciones.trim() !== '' && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">📜 Certificaciones</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPostulacion.certificaciones.split(',').map((cert, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                          {cert.trim()}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
+                {/* Estado Actual */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Estado Actual</h3>
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">📊 Estado Actual</h3>
                   <span className={`inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold border ${getEstadoColor(selectedPostulacion.estado)}`}>
                     {getEstadoIcon(selectedPostulacion.estado)}
                     {selectedPostulacion.estado}
@@ -341,15 +365,20 @@ const GestionPostulacion = () => {
                 </div>
               </div>
 
-              <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-                <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
-                  Rechazar
+              {/* Acciones */}
+              <div className="p-6 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 sticky bottom-0">
+                <button 
+                  onClick={() => handleDownloadCV(selectedPostulacion.urlCv)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Descargar CV
                 </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  Programar Entrevista
-                </button>
-                <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                  Avanzar a siguiente fase
+                <button 
+                  onClick={() => setSelectedPostulacion(null)}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Cerrar
                 </button>
               </div>
             </div>
