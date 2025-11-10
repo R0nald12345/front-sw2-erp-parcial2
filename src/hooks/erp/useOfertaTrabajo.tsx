@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { ofertaTrabajoService } from '@/src/service/microservices/erp/oferta-trabajo.service';
+import { useState, useEffect, useCallback } from "react";
+import { ofertaTrabajoService } from "@/src/service/microservices/erp/oferta-trabajo.service";
 // import { OfertaTrabajoType } from '@/types/erp/oferta-trabajo.types';
-import { invalidateGraphQLCache } from '@/src/service/graphql.service';
-import { OfertaTrabajoType } from '@/src/types/erp/empresa.types';
+import { invalidateGraphQLCache } from "@/src/service/graphql.service";
+import { OfertaTrabajoType } from "@/src/types/erp/empresa.types";
 
 interface UseOfertaTrabajoReturn {
   ofertas: OfertaTrabajoType[];
@@ -39,9 +39,9 @@ export const useOfertaTrabajo = (): UseOfertaTrabajoReturn => {
       const data = await ofertaTrabajoService.getOfertasTrabajo();
       setOfertas(data);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error fetching ofertas';
+      const msg = err instanceof Error ? err.message : "Error fetching ofertas";
       setError(msg);
-      console.error('Error en fetchOfertas:', err);
+      console.error("Error en fetchOfertas:", err);
     } finally {
       setLoading(false);
     }
@@ -50,21 +50,18 @@ export const useOfertaTrabajo = (): UseOfertaTrabajoReturn => {
   /**
    * Obtiene una oferta por ID
    */
-  const getOfertaTrabajoPorId = useCallback(
-    async (id: string): Promise<OfertaTrabajoType | null> => {
-      try {
-        setError(null);
-        const data = await ofertaTrabajoService.getOfertaTrabajoPorId(id);
-        return data;
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error fetching oferta';
-        setError(msg);
-        console.error('Error en getOfertaTrabajoPorId:', err);
-        return null;
-      }
-    },
-    []
-  );
+  const getOfertaTrabajoPorId = useCallback(async (id: string): Promise<OfertaTrabajoType | null> => {
+    try {
+      setError(null);
+      const data = await ofertaTrabajoService.getOfertaTrabajoPorId(id);
+      return data;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error fetching oferta";
+      setError(msg);
+      console.error("Error en getOfertaTrabajoPorId:", err);
+      return null;
+    }
+  }, []);
 
   /**
    * Crea una nueva oferta de trabajo
@@ -82,13 +79,13 @@ export const useOfertaTrabajo = (): UseOfertaTrabajoReturn => {
       try {
         setError(null);
         const nuevaOferta = await ofertaTrabajoService.crearOfertaTrabajo(data);
-        invalidateGraphQLCache('obtenerOfertasTrabajo');
+        invalidateGraphQLCache("ofertasTrabajo");
         await fetchOfertas();
         return nuevaOferta;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error creating oferta';
+        const msg = err instanceof Error ? err.message : "Error creating oferta";
         setError(msg);
-        console.error('Error en crearOfertaTrabajo:', err);
+        console.error("Error en crearOfertaTrabajo:", err);
         throw err;
       }
     },
@@ -104,14 +101,14 @@ export const useOfertaTrabajo = (): UseOfertaTrabajoReturn => {
         setError(null);
         const resultado = await ofertaTrabajoService.eliminarOfertaTrabajo(id);
         if (resultado) {
-          invalidateGraphQLCache('obtenerOfertasTrabajo');
+          invalidateGraphQLCache("ofertasTrabajo");
           await fetchOfertas();
         }
         return resultado;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error deleting oferta';
+        const msg = err instanceof Error ? err.message : "Error deleting oferta";
         setError(msg);
-        console.error('Error en eliminarOfertaTrabajo:', err);
+        console.error("Error en eliminarOfertaTrabajo:", err);
         throw err;
       }
     },

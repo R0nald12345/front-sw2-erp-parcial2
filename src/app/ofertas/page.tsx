@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { JobOffersCard } from "../../components/job-offers-card";
-import { ApplicationModal } from "../../components/application-modal";
-import { Badge } from "../../components/ui/badge";
-import { Briefcase, TrendingUp } from "lucide-react";
+import { JobOffersCard } from "../../components/ofertaTrabajo/job-offers-card";
+import { ApplicationModal } from "../../components/ofertaTrabajo/application-modal";
+import { Search, Briefcase } from "lucide-react";
+import { Input } from "../../components/ui/input";
+import { useOfertaTrabajo } from "@/src/hooks/erp/useOfertaTrabajo";
 
 const mockOffers = [
   {
@@ -56,13 +57,49 @@ const mockOffers = [
       },
     ],
   },
+  {
+    id: "3c4e5f6a-7b8c-9d0e-1f2g-3h4i5j6k7l8m",
+    titulo: "Especialista en UX/UI Design",
+    descripcion: "Diseña interfaces elegantes para plataforma de fintech de última generación",
+    salario: 6500,
+    ubicacion: "Santa Cruz",
+    requisitos: "Figma, Adobe XD, Prototipado, Design Systems",
+    fechaPublicacion: "2025-10-28",
+    empresa: {
+      id: "d03egg5c-8551-42fb-9653-c8145102939b",
+      nombre: "TechVision Inc",
+      correo: "careers@techvision.com.bo",
+      rubro: "FinTech",
+    },
+    postulaciones: [],
+  },
+  {
+    id: "4d5f6g7h-8i9j-0k1l-2m3n-4o5p6q7r8s9t",
+    titulo: "DevOps Engineer",
+    descripcion: "Gestiona infraestructura en la nube y automatiza procesos de deployment",
+    salario: 7800,
+    ubicacion: "La Paz, Bolivia",
+    requisitos: "Kubernetes, Docker, AWS, CI/CD pipelines",
+    fechaPublicacion: "2025-10-25",
+    empresa: {
+      id: "e04fhh6d-9662-52fc-0754-d9256213a50c",
+      nombre: "CloudNative Solutions",
+      correo: "jobs@cloudnative.bo",
+      rubro: "Cloud Computing",
+    },
+    postulaciones: [],
+  },
 ];
 
 export default function OfertasPage() {
   const [selectedOffer, setSelectedOffer] = useState<(typeof mockOffers)[0] | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [applications, setApplications] = useState<
     Array<{ offerId: string; name: string; email: string; phone: string }>
   >([]);
+
+  const { ofertas } = useOfertaTrabajo();
+  console.log("📊 Ofertas:", ofertas);
 
   const handleOpenOffer = (offer: (typeof mockOffers)[0]) => {
     setSelectedOffer(offer);
@@ -87,83 +124,68 @@ export default function OfertasPage() {
     }
   };
 
+  const filteredOffers = mockOffers.filter(
+    (offer) =>
+      offer.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      offer.empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      offer.ubicacion.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const userApplications = applications;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <div className="bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-primary-foreground/20 rounded-lg">
-              <Briefcase className="w-8 h-8" />
-            </div>
-            <span className="text-sm font-semibold tracking-wider uppercase opacity-90">Oportunidades</span>
-          </div>
-          <h1 className="text-5xl font-bold mb-2">Ofertas de Empleo</h1>
-          <p className="text-lg opacity-90">Descubre las mejores oportunidades laborales en el mercado</p>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex items-center gap-3 mb-4">
+          <Briefcase className="w-8 h-8" />
+          <span className="text-sm font-semibold tracking-widest opacity-90">OPORTUNIDADES LABORALES</span>
         </div>
+        <h1 className="text-5xl font-bold mb-2 text-pretty">Encuentra tu próxima oportunidad</h1>
+        <p className="text-lg opacity-90 max-w-2xl">
+          Explora ofertas de empleo exclusivas y únete a equipos innovadores en tecnología
+        </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Total Ofertas</p>
-                <p className="text-3xl font-bold text-primary">{mockOffers.length}</p>
-              </div>
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Postulaciones</p>
-                <p className="text-3xl font-bold text-secondary">{applications.length}</p>
-              </div>
-              <div className="p-3 bg-secondary/10 rounded-lg">
-                <Briefcase className="w-6 h-6 text-secondary" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Total de Candidatos</p>
-                <p className="text-3xl font-bold text-accent">
-                  {mockOffers.reduce((acc, offer) => acc + offer.postulaciones.length, 0)}
-                </p>
-              </div>
-              <div className="p-3 bg-accent/10 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-accent" />
-              </div>
-            </div>
+        <div className="mb-12">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary w-5 h-5" />
+            <Input
+              type="text"
+              placeholder="Busca por puesto, empresa o ubicación..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 py-6 bg-surface border-2 border-border hover:border-accent transition-smooth focus:border-primary focus:outline-none text-base"
+            />
           </div>
         </div>
 
-        {/* Ofertas */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-6">Ofertas Disponibles</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {mockOffers.map((offer) => (
-              <JobOffersCard key={offer.id} offer={offer} onApply={() => handleOpenOffer(offer)} />
-            ))}
+          <div className="flex items-center gap-2 mb-8">
+            <h2 className="text-3xl font-bold">Ofertas disponibles</h2>
+            <span className="bg-accent text-primary px-4 py-2 rounded-full font-semibold text-sm">
+              {filteredOffers.length}
+            </span>
           </div>
+
+          {filteredOffers.length > 0 ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {filteredOffers.map((offer) => (
+                <JobOffersCard key={offer.id} offer={offer} onApply={() => handleOpenOffer(offer)} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-text-secondary text-lg">No encontramos ofertas que coincidan con tu búsqueda</p>
+            </div>
+          )}
         </div>
 
-        {/* Postulaciones */}
         {userApplications.length > 0 && (
-          <div className="border-t border-border pt-12">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <div className="p-2 bg-accent/10 rounded-lg">
-                <Briefcase className="w-5 h-5 text-accent" />
-              </div>
-              Mis Postulaciones ({userApplications.length})
+          <div className="border-t-2 border-border pt-12">
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+              <span className="w-1 h-8 bg-accent rounded-full"></span>
+              Mis Postulaciones
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               {userApplications.map((app, idx) => {
@@ -171,25 +193,20 @@ export default function OfertasPage() {
                 return (
                   <div
                     key={idx}
-                    className="p-6 border border-border rounded-lg bg-card hover:shadow-lg transition-all duration-300 hover:border-primary/30"
+                    className="p-6 bg-surface border-2 border-border rounded-xl hover:shadow-lg hover:border-accent transition-smooth group"
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-semibold text-lg">{app.name}</h3>
-                      <Badge className="bg-green-500/20 text-green-700 dark:text-green-400 border-0">Enviada</Badge>
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-semibold text-primary group-hover:text-primary transition-smooth">
+                        {app.name}
+                      </h3>
+                      <span className="inline-block bg-success/10 text-success px-3 py-1 rounded-full text-xs font-semibold">
+                        Enviada
+                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Puesto: <span className="font-medium text-foreground">{offer?.titulo}</span>
+                    <p className="text-sm text-text-secondary mb-3">
+                      Oferta: <span className="font-semibold text-primary">{offer?.titulo}</span>
                     </p>
-                    <div className="flex flex-col gap-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Email:</span>
-                        <span className="text-primary font-medium">{app.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Teléfono:</span>
-                        <span className="font-medium">{app.phone}</span>
-                      </div>
-                    </div>
+                    <p className="text-xs text-text-tertiary">{app.email}</p>
                   </div>
                 );
               })}
