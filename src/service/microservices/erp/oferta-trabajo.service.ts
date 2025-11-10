@@ -11,6 +11,7 @@ export const ofertaTrabajoService = {
         undefined,
         "ofertasTrabajo"
       );
+      console.log("😂", result?.ofertasTrabajo);
       return result?.ofertasTrabajo || [];
     } catch (error) {
       console.error("Error fetching ofertas trabajo:", error);
