@@ -1,3 +1,4 @@
+
 export type OfertaTrabajoType = {
   id: string;
   titulo: string;
@@ -10,6 +11,7 @@ export type OfertaTrabajoType = {
   updatedAt?: string;
 };
 
+
 export type EmpresaType = {
   id: string;
   nombre: string;
@@ -20,11 +22,13 @@ export type EmpresaType = {
   ofertas?: OfertaTrabajoType[];
 };
 
+
 export type CreateEmpresaInput = {
   nombre: string;
   correo: string;
   rubro: string;
 };
+
 
 export type UpdateEmpresaInput = {
   id: string;

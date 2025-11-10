@@ -27,11 +27,11 @@ export const useEmpresa = (): UseEmpresaReturn => {
       setError(null);
       console.log('📊 Iniciando carga de empresas...');
       
-      // Obtener todas las empresas (limit 100 para obtener todas)
-      const data = await empresaService.getEmpresas(100);
-      setEmpresas(data);
+      const data = await empresaService.getEmpresas(10);
+      console.log(`📊 Datos recibidos:`, data);
+      setEmpresas(data || []);
       
-      console.log(`✅ ${data.length} empresas cargadas`);
+      console.log(`✅ ${data?.length || 0} empresas cargadas`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error fetching empresas';
       setError(msg);
@@ -47,7 +47,6 @@ export const useEmpresa = (): UseEmpresaReturn => {
       try {
         setError(null);
         console.log(`🔍 Buscando empresa con id: ${id}`);
-        
         const data = await empresaService.getEmpresaPorId(id);
         return data;
       } catch (err) {
@@ -67,9 +66,7 @@ export const useEmpresa = (): UseEmpresaReturn => {
         console.log('🆕 Creando nueva empresa:', input.nombre);
         
         const nuevaEmpresa = await empresaService.crearEmpresa(input);
-        
-        // Invalidar cache y refrescar lista
-        invalidateGraphQLCache('empresas');
+        invalidateGraphQLCache();
         await fetchEmpresas();
         
         console.log('✅ Empresa creada exitosamente');
@@ -91,9 +88,7 @@ export const useEmpresa = (): UseEmpresaReturn => {
         console.log(`✏️ Actualizando empresa: ${input.id}`);
         
         const empresaActualizada = await empresaService.actualizarEmpresa(input);
-        
-        // Invalidar cache y refrescar lista
-        invalidateGraphQLCache('empresas');
+        invalidateGraphQLCache();
         await fetchEmpresas();
         
         console.log('✅ Empresa actualizada exitosamente');
@@ -117,7 +112,7 @@ export const useEmpresa = (): UseEmpresaReturn => {
         const resultado = await empresaService.eliminarEmpresa(id);
         
         if (resultado) {
-          invalidateGraphQLCache('empresas');
+          invalidateGraphQLCache();
           await fetchEmpresas();
           console.log('✅ Empresa eliminada exitosamente');
         }
@@ -133,7 +128,6 @@ export const useEmpresa = (): UseEmpresaReturn => {
     [fetchEmpresas]
   );
 
-  // Cargar empresas al montar el componente
   useEffect(() => {
     fetchEmpresas();
   }, [fetchEmpresas]);

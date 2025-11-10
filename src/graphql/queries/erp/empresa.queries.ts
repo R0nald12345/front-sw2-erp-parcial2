@@ -7,7 +7,7 @@ export const GET_EMPRESAS = `
       rubro
       createdAt
       updatedAt
-      ofertas(limit: 5) {
+      ofertas(limit: 10) {
         id
         titulo
         descripcion

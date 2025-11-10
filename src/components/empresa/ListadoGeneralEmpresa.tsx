@@ -10,7 +10,7 @@ import { EmpresaType, CreateEmpresaInput, UpdateEmpresaInput } from "@/src/types
 import FormEmpresa from "./FormEmpresa";
 
 const ListadoGeneralEmpresa = () => {
-  const { empresas, loading, error, eliminarEmpresa, refetch, crearEmpresa, actualizarEmpresa } = useEmpresa();
+  const { empresas, loading, error, eliminarEmpresa, refetch, crearEmpresa, actualizarEmpresa } = useEmpresa(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedEmpresa, setSelectedEmpresa] = useState<EmpresaType | null>(null);

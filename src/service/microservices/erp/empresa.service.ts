@@ -26,17 +26,16 @@ interface UpdateEmpresaResponse {
 export const empresaService = {
   /**
    * Obtener todas las empresas
-   * @param limit - Número máximo de empresas a obtener (default: 10, max: 100)
    */
   async getEmpresas(limit: number = 10): Promise<EmpresaType[]> {
     try {
-      console.log(`🏢 Fetching empresas with limit: ${limit}...`);
+      console.log(`\n🏢 SERVICE: Fetching empresas with limit: ${limit}`);
       
       const result = await executeGraphQL<GetEmpresasResponse>(
         EmpresaQueries.GET_EMPRESAS,
         { limit },
-        'empresas',
-        true
+        'GetEmpresas',  // Nombre de operación
+        true  // isQuery
       );
 
       if (!result?.empresas) {
@@ -54,11 +53,10 @@ export const empresaService = {
 
   /**
    * Obtener empresa por ID
-   * @param id - UUID de la empresa
    */
   async getEmpresaPorId(id: string): Promise<EmpresaType | null> {
     try {
-      console.log(`🏢 Fetching empresa with id: ${id}`);
+      console.log(`\n🏢 SERVICE: Fetching empresa with id: ${id}`);
 
       if (!id || id.trim() === '') {
         throw new Error('Invalid empresa ID');
@@ -67,7 +65,7 @@ export const empresaService = {
       const result = await executeGraphQL<GetEmpresaPorIdResponse>(
         EmpresaQueries.GET_EMPRESA_POR_ID,
         { id },
-        'empresa',
+        'GetEmpresaPorId',
         true
       );
 
@@ -86,17 +84,15 @@ export const empresaService = {
 
   /**
    * Crear nueva empresa
-   * @param input - Datos de la empresa a crear
    */
   async crearEmpresa(input: CreateEmpresaInput): Promise<EmpresaType> {
     try {
-      console.log('🆕 Creating empresa:', input.nombre);
+      console.log(`\n🆕 SERVICE: Creating empresa:`, input.nombre);
 
       if (!input.nombre || !input.correo || !input.rubro) {
         throw new Error('Missing required fields: nombre, correo, rubro');
       }
 
-      // Validar formato de correo
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(input.correo)) {
         throw new Error('Invalid email format');
@@ -105,15 +101,15 @@ export const empresaService = {
       const result = await executeGraphQL<CreateEmpresaResponse>(
         EmpresaMutations.CREAR_EMPRESA,
         input,
-        'createEmpresa',
-        false
+        'CrearEmpresa',
+        false  // isMutation
       );
 
       if (!result?.createEmpresa) {
         throw new Error('Error creating empresa');
       }
 
-      console.log('✅ Empresa created successfully:', result.createEmpresa.id);
+      console.log('✅ Empresa created:', result.createEmpresa.id);
       return result.createEmpresa;
     } catch (error) {
       console.error('❌ Error creating empresa:', error);
@@ -122,12 +118,11 @@ export const empresaService = {
   },
 
   /**
-   * Actualizar empresa existente
-   * @param input - Datos de la empresa a actualizar
+   * Actualizar empresa
    */
   async actualizarEmpresa(input: UpdateEmpresaInput): Promise<EmpresaType> {
     try {
-      console.log(`✏️ Updating empresa with id: ${input.id}`);
+      console.log(`\n✏️ SERVICE: Updating empresa: ${input.id}`);
 
       if (!input.id || !input.nombre || !input.correo || !input.rubro) {
         throw new Error('Missing required fields');
@@ -136,7 +131,7 @@ export const empresaService = {
       const result = await executeGraphQL<UpdateEmpresaResponse>(
         EmpresaMutations.ACTUALIZAR_EMPRESA,
         input,
-        'updateEmpresa',
+        'ActualizarEmpresa',
         false
       );
 
@@ -144,7 +139,7 @@ export const empresaService = {
         throw new Error('Error updating empresa');
       }
 
-      console.log('✅ Empresa updated successfully:', result.updateEmpresa.id);
+      console.log('✅ Empresa updated:', result.updateEmpresa.id);
       return result.updateEmpresa;
     } catch (error) {
       console.error(`❌ Error updating empresa:`, error);
@@ -154,11 +149,10 @@ export const empresaService = {
 
   /**
    * Eliminar empresa
-   * @param id - UUID de la empresa a eliminar
    */
   async eliminarEmpresa(id: string): Promise<boolean> {
     try {
-      console.log(`🗑️ Deleting empresa with id: ${id}`);
+      console.log(`\n🗑️ SERVICE: Deleting empresa: ${id}`);
 
       if (!id || id.trim() === '') {
         throw new Error('Invalid empresa ID');
@@ -167,7 +161,7 @@ export const empresaService = {
       const result = await executeGraphQL<DeleteEmpresaResponse>(
         EmpresaMutations.ELIMINAR_EMPRESA,
         { id },
-        'deleteEmpresa',
+        'EliminarEmpresa',
         false
       );
 
