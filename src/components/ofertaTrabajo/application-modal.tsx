@@ -160,162 +160,173 @@ export function ApplicationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-surface rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-border">
-        {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-primary to-accent p-6 flex items-center justify-between border-b-2 border-border">
-          <div>
-            <h2 className="text-2xl font-bold text-white">{offer.titulo}</h2>
-            <p className="text-white/80 text-sm">{offer.empresa?.nombre}</p>
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+      <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
+        {/* Header con Gradiente */}
+        <div className="sticky top-0 bg-linear-to-r from-blue-600 via-blue-500 to-purple-600 p-8 flex items-start justify-between z-10">
+          <div className="flex-1 pr-4">
+            <h2 className="text-3xl font-bold text-white mb-2 leading-tight">{offer.titulo}</h2>
+            <p className="text-blue-100 font-medium">{offer.empresa?.nombre}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+            className="shrink-0 text-white hover:bg-white/20 rounded-full p-2 transition-all duration-300 hover:scale-110"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Nombre */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-2">
-              Nombre Completo *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Tu nombre completo"
-              className="w-full px-4 py-3 bg-background border-2 border-border rounded-lg focus:border-accent focus:outline-none transition-colors"
-            />
-          </div>
+        {/* Contenido Scrolleable */}
+        <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+            {/* Grid de Inputs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Nombre */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Nombre Completo <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Juan Pérez García"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
+                />
+              </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-2">
-              Email *
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="tu@email.com"
-              className="w-full px-4 py-3 bg-background border-2 border-border rounded-lg focus:border-accent focus:outline-none transition-colors"
-            />
-          </div>
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="juan@email.com"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
+                />
+              </div>
 
-          {/* Teléfono */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-2">
-              Teléfono *
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="+591 70000000"
-              className="w-full px-4 py-3 bg-background border-2 border-border rounded-lg focus:border-accent focus:outline-none transition-colors"
-            />
-          </div>
-
-          {/* CV */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-2">
-              Adjuntar CV (PDF) *
-            </label>
-            <div className="relative">
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={handleFileChange}
-                className="hidden"
-                id="cv-input"
-              />
-              <label
-                htmlFor="cv-input"
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-background border-2 border-dashed border-border rounded-lg hover:border-accent cursor-pointer transition-colors"
-              >
-                <Upload className="w-5 h-5 text-accent" />
-                <span className="text-sm text-text-secondary">
-                  {cvFileName || "Selecciona tu CV"}
-                </span>
-              </label>
+              {/* Teléfono */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Teléfono <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+591 70000000"
+                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
+                />
+              </div>
             </div>
-            <p className="text-xs text-text-tertiary mt-2">
-              Máximo 5MB | Solo PDF
-            </p>
-          </div>
 
-          {/* Mensaje */}
-          <div>
-            <label className="block text-sm font-semibold text-text-primary mb-2">
-              Mensaje (Opcional)
-            </label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              placeholder="Cuéntanos por qué te interesa esta posición..."
-              rows={4}
-              className="w-full px-4 py-3 bg-background border-2 border-border rounded-lg focus:border-accent focus:outline-none transition-colors resize-none"
-            />
-          </div>
+            {/* CV Upload */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Adjuntar CV (PDF) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="cv-input"
+                />
+                <label
+                  htmlFor="cv-input"
+                  className={`flex items-center justify-center gap-3 w-full px-6 py-4 bg-linear-to-br from-blue-50 to-purple-50 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
+                    cvFileName
+                      ? "border-green-400 bg-green-50"
+                      : "border-gray-300 hover:border-blue-400 hover:from-blue-100 hover:to-purple-100"
+                  }`}
+                >
+                  <Upload className={`w-6 h-6 ${cvFileName ? "text-green-500" : "text-blue-500"}`} />
+                  <div className="text-center">
+                    <span className={`text-sm font-semibold ${cvFileName ? "text-green-700" : "text-gray-700"}`}>
+                      {cvFileName ? "✓ " + cvFileName : "Selecciona tu CV"}
+                    </span>
+                    <p className="text-xs text-gray-500 mt-1">Máximo 5MB</p>
+                  </div>
+                </label>
+              </div>
+            </div>
 
-          {/* Detalles de la Oferta */}
-          <div className="bg-background border-2 border-border rounded-lg p-4 space-y-2">
-            <p className="text-xs font-semibold text-text-tertiary uppercase">
-              Detalles de la Oferta
-            </p>
-            {offer.salario && (
-              <p className="text-sm">
-                <span className="text-text-tertiary">Salario: </span>
-                <span className="font-semibold text-primary">
-                  ${offer.salario.toLocaleString("es-ES")}
-                </span>
+            {/* Mensaje */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Mensaje (Opcional)
+              </label>
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleInputChange}
+                placeholder="Cuéntanos por qué te interesa esta posición y qué te hace un buen candidato..."
+                rows={3}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 resize-none text-gray-900 placeholder-gray-400"
+              />
+            </div>
+
+            {/* Detalles de la Oferta - Card mejorada */}
+            <div className="bg-linear-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 space-y-3">
+              <p className="text-xs font-bold text-blue-700 uppercase tracking-wider">
+                📋 Detalles de la Oferta
               </p>
-            )}
-            <p className="text-sm">
-              <span className="text-text-tertiary">Ubicación: </span>
-              <span className="font-semibold text-primary">{offer.ubicacion}</span>
-            </p>
-            <p className="text-sm">
-              <span className="text-text-tertiary">Contacto: </span>
-              <span className="font-semibold text-primary text-xs break-all">
-                {offer.empresa?.correo}
-              </span>
-            </p>
-          </div>
+              <div className="space-y-2">
+                {offer.salario && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 text-sm">Salario:</span>
+                    <span className="font-bold text-lg text-blue-600">
+                      ${offer.salario.toLocaleString("es-ES")}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 text-sm">📍 Ubicación:</span>
+                  <span className="font-semibold text-gray-800">{offer.ubicacion}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-gray-600 text-sm">📧 Contacto:</span>
+                  <span className="font-semibold text-gray-800 text-right break-all max-w-xs">
+                    {offer.empresa?.correo}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-          {/* Botones */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-3 bg-background border-2 border-border rounded-lg font-semibold text-text-primary hover:bg-border transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader className="w-5 h-5 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                "Enviar Postulación"
-              )}
-            </button>
-          </div>
-        </form>
+            {/* Botones */}
+            <div className="flex gap-3 pt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-300 hover:scale-105"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:scale-105"
+              >
+                {loading ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  "✓ Enviar Postulación"
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
