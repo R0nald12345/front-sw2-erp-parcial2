@@ -1,44 +1,43 @@
 "use client"
 
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import { useState } from "react";
 
 const HeaderOfertaTrabajo = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <>
-        {/* Parte Superrior */}
-      <section className="flex-col justify-center p-2 bg-red w-full">
-        <h3 className="text-3xl font-bold text-center  mt-3">
-          Oferta de trabajos
-        </h3>
+      <section className="card-modern mx-4 md:mx-6 mb-6 p-6 md:p-8">
+        <div className="mb-6">
+          <h3 className="text-3xl md:text-4xl font-bold text-gradient mb-2">
+            💼 Gestión de Ofertas de Trabajo
+          </h3>
+          <p className="text-gray-600 text-sm md:text-base">Crea y gestiona todas tus ofertas laborales</p>
+        </div>
 
-        <section className="md:flex md:justify-between md:px-2 bg-red gap-3 ">
-          <div className=" mt-5 col-span-4 flex items-center  justify-end gap-1 md:gap-3">
-            <p className="font-new-font font-new-bold ">Nombre</p>
-            <div className="w-full flex bg-gray-300 border border-black rounded-xl px-2 bg-red">
-              <FaMagnifyingGlass className="mt-2 bg-red" />
+        <div className="flex flex-col md:flex-row gap-4 md:gap-4">
+          {/* Search Input */}
+          <div className="flex-1">
+            <div className="relative">
               <input
                 type="text"
-                placeholder="Buscar"
-                // onChange={handleFiltroCambio}
-                className="w-full font-semibold rounded-xl py-1 bg-gray-300 px-1 outline-none"
+                placeholder="🔍 Buscar por título, empresa o ubicación..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-modern w-full pl-12"
               />
+              <FaMagnifyingGlass className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
           </div>
 
-           
-
-            <button
-              className="mt-5 md:w-1/3 text-white font-new-font font-new-bold bg-green-600 rounded-lg py-3 px-2 w-full"
-              // onClick={() => navigate("/inicio/centrosalud/agregarnuevo")}
-            >
-              Agregar Nuevo +
-            </button>
-
-
-         
-        </section>
+          {/* Add Button */}
+          <button className="btn-success flex items-center justify-center gap-2 whitespace-nowrap md:w-auto">
+            <FaPlus size={18} />
+            <span>Crear Oferta</span>
+          </button>
+        </div>
       </section>
-     
     </>
   )
 }

@@ -1,4 +1,4 @@
-import executeGraphQL from "../../graphql.service";
+import { executeQuery, executeMutation } from "../../graphql.service";
 import * as OfertaQueries from "@/src/graphql/queries/erp/oferta-trabajo.queries";
 import * as OfertaMutations from "@/src/graphql/mutations/erp/oferta-trabajo.mutations";
 import { OfertaTrabajoType } from "@/src/types/erp/oferta-trabajo.types";
@@ -15,11 +15,12 @@ interface CreateOfertaResponse {
   createOfertaTrabajo: OfertaTrabajoType;
 }
 
+interface UpdateOfertaResponse {
+  updateOfertaTrabajo: OfertaTrabajoType;
+}
+
 interface DeleteOfertaResponse {
-  deleteOfertaTrabajo: {
-    success: boolean;
-    message: string;
-  };
+  deleteOfertaTrabajo: string;
 }
 
 export const ofertaTrabajoService = {
@@ -27,11 +28,9 @@ export const ofertaTrabajoService = {
     try {
       console.log(`\n📋 SERVICE: Fetching ofertas trabajo with limit: ${limit}`);
       
-      const result = await executeGraphQL<GetOfertasResponse>(
+      const result = await executeQuery<GetOfertasResponse>(
         OfertaQueries.GET_OFERTAS_TRABAJO,
-        { limit },
-        'GetOfertasTrabajo',
-        true
+        { limit }
       );
 
       if (!result?.ofertasTrabajo) {
@@ -55,11 +54,9 @@ export const ofertaTrabajoService = {
         throw new Error('Invalid oferta ID');
       }
 
-      const result = await executeGraphQL<GetOfertaPorIdResponse>(
+      const result = await executeQuery<GetOfertaPorIdResponse>(
         OfertaQueries.GET_OFERTA_TRABAJO_POR_ID,
-        { id },
-        'GetOfertaTrabajoPorId',
-        true
+        { id }
       );
 
       if (!result?.ofertaTrabajo) {
@@ -95,11 +92,9 @@ export const ofertaTrabajoService = {
         throw new Error('Salary must be greater than 0');
       }
 
-      const result = await executeGraphQL<CreateOfertaResponse>(
+      const result = await executeMutation<CreateOfertaResponse>(
         OfertaMutations.CREAR_OFERTA_TRABAJO,
-        data,
-        'CreateOfertaTrabajo',
-        false
+        data
       );
 
       if (!result?.createOfertaTrabajo) {
@@ -114,7 +109,40 @@ export const ofertaTrabajoService = {
     }
   },
 
-  async eliminarOfertaTrabajo(id: string): Promise<boolean> {
+  async actualizarOfertaTrabajo(data: {
+    id: string;
+    titulo: string;
+    descripcion: string;
+    salario: number;
+    ubicacion: string;
+    requisitos: string;
+    fechaPublicacion: string;
+  }): Promise<OfertaTrabajoType> {
+    try {
+      console.log(`\n✏️ SERVICE: Updating oferta: ${data.id}`);
+
+      if (!data.id || !data.titulo || !data.descripcion) {
+        throw new Error('Missing required fields');
+      }
+
+      const result = await executeMutation<UpdateOfertaResponse>(
+        OfertaMutations.ACTUALIZAR_OFERTA_TRABAJO,
+        data
+      );
+
+      if (!result?.updateOfertaTrabajo) {
+        throw new Error('Error updating oferta');
+      }
+
+      console.log('✅ Oferta updated:', result.updateOfertaTrabajo.id);
+      return result.updateOfertaTrabajo;
+    } catch (error) {
+      console.error(`❌ Error updating oferta:`, error);
+      throw error;
+    }
+  },
+
+  async eliminarOfertaTrabajo(id: string): Promise<string> {
     try {
       console.log(`\n🗑️ SERVICE: Deleting oferta: ${id}`);
 
@@ -122,19 +150,17 @@ export const ofertaTrabajoService = {
         throw new Error('Invalid oferta ID');
       }
 
-      const result = await executeGraphQL<DeleteOfertaResponse>(
+      const result = await executeMutation<DeleteOfertaResponse>(
         OfertaMutations.ELIMINAR_OFERTA_TRABAJO,
-        { id },
-        'DeleteOfertaTrabajo',
-        false
+        { id }
       );
 
-      if (!result?.deleteOfertaTrabajo?.success) {
-        throw new Error(result?.deleteOfertaTrabajo?.message || 'Error deleting oferta');
+      if (!result?.deleteOfertaTrabajo) {
+        throw new Error('Error deleting oferta');
       }
 
-      console.log('✅ Oferta deleted:', result.deleteOfertaTrabajo.message);
-      return true;
+      console.log('✅ Oferta deleted:', result.deleteOfertaTrabajo);
+      return result.deleteOfertaTrabajo;
     } catch (error) {
       console.error(`❌ Error deleting oferta ${id}:`, error);
       throw error;

@@ -1,4 +1,4 @@
-import executeGraphQL from '../../graphql.service';
+import { executeQuery, executeMutation } from '../../graphql.service';
 import * as PostulacionQueries from '@/src/graphql/queries/erp/postulacion.queries';
 import * as PostulacionMutations from '@/src/graphql/mutations/erp/postulacion.mutations';
 import { PostulacionType } from '@/src/types/erp/postulacion.types';
@@ -15,11 +15,12 @@ interface CreatePostulacionResponse {
   createPostulacion: PostulacionType;
 }
 
+interface UpdateEstadoPostulacionResponse {
+  updatePostulacion: PostulacionType;
+}
+
 interface DeletePostulacionResponse {
-  deletePostulacion: {
-    success: boolean;
-    message: string;
-  };
+  deletePostulacion: string;
 }
 
 export const postulacionService = {
@@ -27,11 +28,9 @@ export const postulacionService = {
     try {
       console.log(`\n📋 SERVICE: Fetching postulaciones with limit: ${limit}`);
 
-      const result = await executeGraphQL<GetPostulacionesResponse>(
+      const result = await executeQuery<GetPostulacionesResponse>(
         PostulacionQueries.GET_POSTULACIONES,
-        { limit },
-        'GetPostulaciones',
-        true
+        { limit }
       );
 
       if (!result?.postulaciones) {
@@ -55,11 +54,9 @@ export const postulacionService = {
         throw new Error('Invalid postulación ID');
       }
 
-      const result = await executeGraphQL<GetPostulacionPorIdResponse>(
+      const result = await executeQuery<GetPostulacionPorIdResponse>(
         PostulacionQueries.GET_POSTULACION_POR_ID,
-        { id },
-        'GetPostulacionPorId',
-        true
+        { id }
       );
 
       if (!result?.postulacion) {
@@ -101,11 +98,9 @@ export const postulacionService = {
         throw new Error('Experience years must be >= 0');
       }
 
-      const result = await executeGraphQL<CreatePostulacionResponse>(
+      const result = await executeMutation<CreatePostulacionResponse>(
         PostulacionMutations.CREAR_POSTULACION,
-        data,
-        'CreatePostulacion',
-        false
+        data
       );
 
       if (!result?.createPostulacion) {
@@ -120,7 +115,32 @@ export const postulacionService = {
     }
   },
 
-  async eliminarPostulacion(id: string): Promise<boolean> {
+  async actualizarEstadoPostulacion(id: string, estado: string): Promise<PostulacionType> {
+    try {
+      console.log(`\n✏️ SERVICE: Updating postulación status: ${id} -> ${estado}`);
+
+      if (!id || !estado) {
+        throw new Error('Missing required fields');
+      }
+
+      const result = await executeMutation<UpdateEstadoPostulacionResponse>(
+        PostulacionMutations.ACTUALIZAR_ESTADO_POSTULACION,
+        { id, estado }
+      );
+
+      if (!result?.updatePostulacion) {
+        throw new Error('Error updating postulación status');
+      }
+
+      console.log('✅ Postulación status updated:', result.updatePostulacion.id);
+      return result.updatePostulacion;
+    } catch (error) {
+      console.error(`❌ Error updating postulación status:`, error);
+      throw error;
+    }
+  },
+
+  async eliminarPostulacion(id: string): Promise<string> {
     try {
       console.log(`\n🗑️ SERVICE: Deleting postulación: ${id}`);
 
@@ -128,19 +148,17 @@ export const postulacionService = {
         throw new Error('Invalid postulación ID');
       }
 
-      const result = await executeGraphQL<DeletePostulacionResponse>(
+      const result = await executeMutation<DeletePostulacionResponse>(
         PostulacionMutations.ELIMINAR_POSTULACION,
-        { id },
-        'DeletePostulacion',
-        false
+        { id }
       );
 
-      if (!result?.deletePostulacion?.success) {
-        throw new Error(result?.deletePostulacion?.message || 'Error deleting postulación');
+      if (!result?.deletePostulacion) {
+        throw new Error('Error deleting postulación');
       }
 
-      console.log('✅ Postulación deleted:', result.deletePostulacion.message);
-      return true;
+      console.log('✅ Postulación deleted:', result.deletePostulacion);
+      return result.deletePostulacion;
     } catch (error) {
       console.error(`❌ Error deleting postulación ${id}:`, error);
       throw error;

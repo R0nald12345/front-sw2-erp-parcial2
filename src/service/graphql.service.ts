@@ -1,78 +1,77 @@
-import { graphqlClient } from './api.client';
-
-// Cache para queries GraphQL
-const queryCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
-
-export const invalidateGraphQLCache = (key?: string) => {
-  if (key) {
-    queryCache.delete(key);
-  } else {
-    queryCache.clear();
-  }
-};
+import { gql } from '@apollo/client';
+import { apolloClient } from './api.client';
 
 /**
- * Ejecuta una query/mutation GraphQL contra el gateway
+ * Ejecuta una query GraphQL contra el gateway usando Apollo Client
  * @param query - String de la query GraphQL
  * @param variables - Variables para la query
- * @param operationName - Nombre de la operación (empresas, createEmpresa, etc)
- * @param isQuery - true si es query, false si es mutation
  */
-async function executeGraphQL<T>(
+export async function executeQuery<T>(
   query: string,
-  variables: Record<string, any> = {},
-  operationName: string = '',
-  isQuery: boolean = true
+  variables: Record<string, any> = {}
 ): Promise<T> {
   try {
-    const cacheKey = `${operationName}-${JSON.stringify(variables)}`;
-
-    // Verificar cache si es query
-    if (isQuery && queryCache.has(cacheKey)) {
-      const cached = queryCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        console.log(`📦 Cache hit for ${operationName}`);
-        return cached.data;
-      }
-    }
-
-    console.log(`\n${'='.repeat(50)}`);
-    console.log(`📡 Executing GraphQL ${isQuery ? 'Query' : 'Mutation'}: ${operationName}`);
-    console.log(`${'='.repeat(50)}`);
-    console.log(`📝 Query:\n${query.substring(0, 200)}${query.length > 200 ? '...' : ''}`);
-    console.log(`📋 Variables:`, variables);
-
-    // IMPORTANTE: Usar '' como URL porque la baseURL ya tiene el endpoint
-    const response = await graphqlClient.post('', {
-      query,
+    const result = await apolloClient.query({
+      query: gql(query),
       variables,
-      operationName,
     });
 
-    if (response.data?.errors) {
-      console.error('❌ GraphQL Errors:', response.data.errors);
-      throw new Error(response.data.errors[0].message);
-    }
-
-    const result = response.data?.data as T;
-
-    console.log(`✅ GraphQL Response for ${operationName}:`, result);
-
-    // Cachear si es query
-    if (isQuery && result) {
-      queryCache.set(cacheKey, {
-        data: result,
-        timestamp: Date.now(),
-      });
-    }
-
-    return result;
+    return result.data as T;
   } catch (error) {
-    console.error(`\n❌ GraphQL Error in ${operationName}:`);
-    console.error(error);
+    console.error('❌ Query Error:', error);
     throw error;
   }
 }
 
-export default executeGraphQL;
+/**
+ * Ejecuta una mutation GraphQL contra el gateway usando Apollo Client
+ * @param mutation - String de la mutation GraphQL
+ * @param variables - Variables para la mutation
+ */
+export async function executeMutation<T>(
+  mutation: string,
+  variables: Record<string, any> = {}
+): Promise<T> {
+  try {
+    const result = await apolloClient.mutate({
+      mutation: gql(mutation),
+      variables,
+      refetchQueries: 'active',
+    });
+
+    return result.data as T;
+  } catch (error) {
+    console.error('❌ Mutation Error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Valida una query GraphQL
+ */
+export function validateQuery(query: string): boolean {
+  try {
+    gql(query);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Invalida el cache de Apollo Client
+ * @param fieldName - Nombre del campo a invalidar (opcional)
+ * 
+ * Con Apollo Client, el cache se gestiona automáticamente.
+ * Esta función está disponible por compatibilidad con código anterior.
+ */
+export function invalidateGraphQLCache(fieldName?: string): void {
+  try {
+    apolloClient.cache.reset();
+    console.log('✅ Apollo Cache invalidated' + (fieldName ? ` for field: ${fieldName}` : ''));
+  } catch (error) {
+    console.error('❌ Error invalidating cache:', error);
+  }
+}
+
+export default { executeQuery, executeMutation, validateQuery, invalidateGraphQLCache };

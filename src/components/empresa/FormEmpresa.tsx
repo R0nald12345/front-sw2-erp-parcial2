@@ -85,17 +85,17 @@ const FormEmpresa = ({ empresa, onSubmit, onCancel }: FormEmpresaProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h2 className="text-2xl font-bold mb-6">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="card-modern max-w-md w-full p-8 animate-fade-in-up">
+        <h2 className="text-2xl font-bold text-gradient mb-6">
           {empresa ? "✏️ Editar Empresa" : "🆕 Nueva Empresa"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Campo Nombre */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nombre *
+              Nombre Empresa *
             </label>
             <input
               type="text"
@@ -103,22 +103,20 @@ const FormEmpresa = ({ empresa, onSubmit, onCancel }: FormEmpresaProps) => {
               value={formData.nombre}
               onChange={handleChange}
               placeholder="Ej: Tech Solutions S.A."
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.nombre
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
+              className={`input-modern w-full ${
+                errors.nombre ? "border-red-500 ring-red-500" : ""
               }`}
               disabled={loading}
             />
             {errors.nombre && (
-              <p className="text-red-500 text-sm mt-1">{errors.nombre}</p>
+              <p className="text-red-500 text-sm mt-2 font-medium">{errors.nombre}</p>
             )}
           </div>
 
           {/* Campo Correo */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Correo *
+              Correo Electrónico *
             </label>
             <input
               type="email"
@@ -126,15 +124,13 @@ const FormEmpresa = ({ empresa, onSubmit, onCancel }: FormEmpresaProps) => {
               value={formData.correo}
               onChange={handleChange}
               placeholder="contacto@empresa.com"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.correo
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
+              className={`input-modern w-full ${
+                errors.correo ? "border-red-500 ring-red-500" : ""
               }`}
               disabled={loading}
             />
             {errors.correo && (
-              <p className="text-red-500 text-sm mt-1">{errors.correo}</p>
+              <p className="text-red-500 text-sm mt-2 font-medium">{errors.correo}</p>
             )}
           </div>
 
@@ -149,41 +145,39 @@ const FormEmpresa = ({ empresa, onSubmit, onCancel }: FormEmpresaProps) => {
               value={formData.rubro}
               onChange={handleChange}
               placeholder="Ej: Tecnología, Finanzas, etc."
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                errors.rubro
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
+              className={`input-modern w-full ${
+                errors.rubro ? "border-red-500 ring-red-500" : ""
               }`}
               disabled={loading}
             />
             {errors.rubro && (
-              <p className="text-red-500 text-sm mt-1">{errors.rubro}</p>
+              <p className="text-red-500 text-sm mt-2 font-medium">{errors.rubro}</p>
             )}
           </div>
 
           {/* Botones */}
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-3 mt-8 pt-4 border-t border-gray-200">
             <button
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition disabled:opacity-50"
+              className="btn-secondary flex-1"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              className="btn-primary flex-1 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="spinner-small"></div>
                   Guardando...
                 </>
               ) : (
                 <>
-                  {empresa ? "Actualizar" : "Crear"}
+                  {empresa ? "✏️ Actualizar" : "🆕 Crear"}
                 </>
               )}
             </button>

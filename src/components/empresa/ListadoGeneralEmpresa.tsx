@@ -8,9 +8,10 @@ import HeaderEmpresa from "./HeaderEmpresa";
 import Swal from "sweetalert2";
 import { EmpresaType, CreateEmpresaInput, UpdateEmpresaInput } from "@/src/types/erp/empresa.types";
 import FormEmpresa from "./FormEmpresa";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 
 const ListadoGeneralEmpresa = () => {
-  const { empresas, loading, error, eliminarEmpresa, refetch, crearEmpresa, actualizarEmpresa } = useEmpresa(10);
+  const { empresas, loading, error, eliminarEmpresa, refetch, crearEmpresa, actualizarEmpresa } = useEmpresa();
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedEmpresa, setSelectedEmpresa] = useState<EmpresaType | null>(null);
@@ -138,11 +139,9 @@ const ListadoGeneralEmpresa = () => {
 
   if (loading) {
     return (
-      <div className="w-full p-6 flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando empresas...</p>
-        </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="spinner-modern"></div>
+        <span className="ml-3 text-gray-600 font-medium">Cargando empresas...</span>
       </div>
     );
   }
@@ -155,8 +154,9 @@ const ListadoGeneralEmpresa = () => {
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-b-xl mb-4">
-          ⚠️ Error: {error}
+        <div className="alert-error mx-4 md:mx-6 mb-6">
+          <span className="font-semibold">Error al cargar</span>
+          <p className="text-sm mt-1">{error}</p>
         </div>
       )}
 
@@ -169,90 +169,135 @@ const ListadoGeneralEmpresa = () => {
       )}
 
       <main className="w-full mt-5 px-4">
-        {/* Vista para pantallas grandes */}
-        <div className="hidden md:flex flex-col justify-center w-full">
-          <ul className="w-full flex bg-white gap-1 mb-3 rounded-xl shadow-lg">
-            <li className="font-semibold text-start w-[28%] px-3 py-2">
-              Nombre
-            </li>
-            <li className="font-semibold text-start w-[30%] px-3 py-2">
-              Correo
-            </li>
-            <li className="font-semibold text-center w-[15%] px-3 py-2">
-              Rubro
-            </li>
-            <li className="font-semibold text-center w-[12%] px-3 py-2">
-              Ofertas
-            </li>
-            <li className="font-semibold text-center w-[15%] px-3 py-2">
-              Acciones
-            </li>
-          </ul>
+        {/* Empty State */}
+        {empresasFiltradas.length === 0 && (
+          <div className="mx-4 md:mx-6 mb-6">
+            <div className="card-modern p-8 text-center">
+              <div className="text-6xl mb-4">📭</div>
+              <h4 className="text-xl font-semibold text-gray-700 mb-2">No hay empresas</h4>
+              <p className="text-gray-600">
+                {searchTerm 
+                  ? `No se encontraron empresas con "${searchTerm}"` 
+                  : 'Comienza agregando una nueva empresa'}
+              </p>
+            </div>
+          </div>
+        )}
 
-          <section className="mt-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            {empresasFiltradas.length > 0 ? (
-              empresasFiltradas.map((empresa) => (
-                <ListadoEmpresa
-                  key={empresa.id}
-                  empresa={empresa}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-                  onView={handleView}
-                />
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500 bg-white rounded-xl">
-                📭 No hay empresas para mostrar
-              </div>
-            )}
-          </section>
-        </div>
+        {/* Desktop Table View */}
+        {empresasFiltradas.length > 0 && (
+          <div className="hidden md:block mx-4 md:mx-6 mb-6">
+            <div className="card-modern overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gradient-primary border-b border-gray-200">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Empresa</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Correo</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Rubro</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Ofertas</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {empresasFiltradas.map((empresa, index) => (
+                    <tr
+                      key={empresa.id}
+                      className={`${
+                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                      } border-b border-gray-200 hover:bg-blue-50 transition-colors`}
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {empresa.nombre}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{empresa.correo}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{empresa.rubro}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 text-center">
+                        {empresa.ofertas?.length || 0}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-3">
+                          <button
+                            onClick={() => handleView(empresa)}
+                            className="btn-outline-small"
+                            title="Ver empresa"
+                          >
+                            <FaEye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(empresa)}
+                            className="btn-outline-small text-blue-600 hover:text-blue-700"
+                            title="Editar empresa"
+                          >
+                            <FaEdit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(empresa.id)}
+                            className="btn-outline-small text-red-600 hover:text-red-700"
+                            title="Eliminar empresa"
+                          >
+                            <FaTrash size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
-        {/* Vista para pantallas pequeñas */}
-        <div className="md:hidden grid grid-cols-1 gap-4">
-          {empresasFiltradas.length > 0 ? (
-            empresasFiltradas.map((empresa) => (
-              <div key={empresa.id} className="bg-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                <h4 className="font-bold text-lg mb-2">🏢 {empresa.nombre}</h4>
-                <p className="text-gray-600 mb-1 text-sm">
-                  <strong>Correo:</strong> {empresa.correo}
-                </p>
-                <p className="text-gray-600 mb-2 text-sm">
-                  <strong>Rubro:</strong> {empresa.rubro}
-                </p>
-                {empresa.ofertas && empresa.ofertas.length > 0 && (
-                  <p className="text-gray-600 mb-4 text-sm">
-                    <strong>Ofertas:</strong> {empresa.ofertas.length}
-                  </p>
-                )}
-                <div className="flex justify-between gap-2">
+        {/* Mobile Card View */}
+        {empresasFiltradas.length > 0 && (
+          <div className="md:hidden mx-4 mb-6 space-y-4">
+            {empresasFiltradas.map((empresa) => (
+              <div key={empresa.id} className="card-modern p-4">
+                <div className="mb-4">
+                  <h4 className="font-semibold text-lg text-gray-900">🏢 {empresa.nombre}</h4>
+                  <p className="text-sm text-gray-600 mt-1">{empresa.correo}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-gray-200">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Rubro</p>
+                    <p className="text-sm font-medium text-gray-900">{empresa.rubro}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Ofertas</p>
+                    <p className="text-sm font-medium text-gray-900">{empresa.ofertas?.length || 0}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
                   <button
                     onClick={() => handleView(empresa)}
-                    className="flex-1 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition text-sm"
+                    className="flex-1 btn-primary-small"
+                    title="Ver empresa"
                   >
+                    <FaEye size={14} className="mr-2" />
                     Ver
                   </button>
                   <button
                     onClick={() => handleEdit(empresa)}
-                    className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
+                    className="flex-1 btn-secondary-small"
+                    title="Editar empresa"
                   >
+                    <FaEdit size={14} className="mr-2" />
                     Editar
                   </button>
                   <button
                     onClick={() => handleDelete(empresa.id)}
-                    className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition text-sm"
+                    className="flex-1 btn-danger-small"
+                    title="Eliminar empresa"
                   >
+                    <FaTrash size={14} className="mr-2" />
                     Eliminar
                   </button>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500 bg-white rounded-xl">
-              📭 No hay empresas para mostrar
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

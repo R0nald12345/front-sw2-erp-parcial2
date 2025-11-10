@@ -39,40 +39,40 @@ const ListadoEmpresa = ({ empresa, onDelete, onEdit, onView }: ListadoEmpresaPro
   };
 
   return (
-    <ul className='w-full flex gap-1 rounded-xl mb-3 bg-white shadow-md hover:shadow-lg transition-all duration-200'>
-      <li className="w-[28%] font-semibold text-start px-3 py-3 truncate">
+    <ul className='w-full flex gap-1 rounded-xl mb-3 card-modern hover:shadow-large transition-all duration-200 overflow-hidden'>
+      <li className="w-[28%] font-semibold text-start px-4 py-4 truncate text-gray-900">
         {empresa.nombre}
       </li>
-      <li className="w-[30%] font-semibold text-start px-3 py-3 flex items-center truncate">
+      <li className="w-[30%] font-semibold text-start px-4 py-4 flex items-center truncate text-gray-700">
         {empresa.correo}
       </li>
-      <li className="w-[15%] font-semibold px-3 py-3 flex items-center justify-center">
+      <li className="w-[15%] font-semibold px-4 py-4 flex items-center justify-center text-gray-700">
         {empresa.rubro}
       </li>
-      <li className="w-[12%] font-semibold px-3 py-3 flex items-center justify-center">
-        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm">
+      <li className="w-[12%] font-semibold px-4 py-4 flex items-center justify-center">
+        <span className="badge-primary text-xs">
           {empresa.ofertas?.length || 0}
         </span>
       </li>
-      <li className='w-[15%] flex items-center justify-end pr-2'>
+      <li className='w-[15%] flex items-center justify-end pr-4'>
         <div className='flex justify-between gap-2 cursor-pointer'>
           <button
             onClick={handleViewClick}
-            className="p-2 rounded-lg bg-black text-white hover:bg-gray-800 transition tooltip"
+            className="btn-outline-small text-gray-600 hover:text-gray-900"
             title="Ver detalles"
           >
             <IoEyeSharp className="text-lg" />
           </button>
           <button
             onClick={handleEditClick}
-            className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition tooltip"
+            className="btn-outline-small text-blue-600 hover:text-blue-700"
             title="Editar"
           >
             <BiEditAlt className="text-lg" />
           </button>
           <button
             onClick={handleDeleteClick}
-            className="p-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition tooltip"
+            className="btn-outline-small text-red-600 hover:text-red-700"
             title="Eliminar"
           >
             <RiDeleteBin5Line className="text-lg" />
