@@ -3,12 +3,30 @@
 import { useState } from 'react';
 import { Search, Filter, Download, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, Mail, Phone, FileText, Calendar } from 'lucide-react';
 
+// Definir tipos TypeScript
+interface Postulacion {
+  id: number;
+  nombre: string;
+  email: string;
+  telefono: string;
+  puesto: string;
+  empresa: string;
+  experiencia: string;
+  educacion: string;
+  estado: 'Pendiente' | 'En Revisión' | 'Entrevista' | 'Ofertado' | 'Contratado' | 'Rechazado';
+  fecha: string;
+  urlCV: string;
+  habilidades: string[];
+  idiomas: string[];
+  certificaciones: string[];
+}
+
 const Postulacion = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstado, setFilterEstado] = useState('Todos');
-  const [selectedPostulacion, setSelectedPostulacion] = useState(null);
+  const [selectedPostulacion, setSelectedPostulacion] = useState<Postulacion | null>(null);
 
-  const postulaciones = [
+  const postulaciones: Postulacion[] = [
     {
       id: 1,
       nombre: 'Juan Carlos Pérez',
@@ -107,8 +125,8 @@ const Postulacion = () => {
     }
   ];
 
-  const getEstadoColor = (estado) => {
-    const colores = {
+  const getEstadoColor = (estado: string): string => {
+    const colores: Record<string, string> = {
       'Pendiente': 'bg-yellow-100 text-yellow-800 border-yellow-300',
       'En Revisión': 'bg-blue-100 text-blue-800 border-blue-300',
       'Entrevista': 'bg-purple-100 text-purple-800 border-purple-300',
@@ -119,7 +137,7 @@ const Postulacion = () => {
     return colores[estado] || 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
-  const getEstadoIcon = (estado) => {
+  const getEstadoIcon = (estado: string) => {
     switch(estado) {
       case 'Contratado': return <CheckCircle className="w-4 h-4" />;
       case 'Rechazado': return <XCircle className="w-4 h-4" />;
@@ -139,7 +157,7 @@ const Postulacion = () => {
   const estadosUnicos = ['Todos', ...new Set(postulaciones.map(p => p.estado))];
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <div className="p-6 bg-linear-to-br from-gray-50 to-blue-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
