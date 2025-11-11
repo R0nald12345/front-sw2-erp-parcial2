@@ -1,18 +1,18 @@
-import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
-import { Observable } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from "@apollo/client";
+import { Observable } from "@apollo/client";
 
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'https://jellyfish-app-lj4xj.ondigitalocean.app/graphql';
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "https://jellyfish-app-lj4xj.ondigitalocean.app/graphql";
 
 console.log(`🎯 Apollo Client Configuration:`);
 console.log(`   GraphQL URL: ${GRAPHQL_URL}`);
 
 // En desarrollo, ejecutar diagnóstico en el cliente
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   // Importar dinámicamente para evitar problemas de SSR
-  import('@/src/utils/diagnostics').then(({ runFullDiagnostics }) => {
+  import("@/src/utils/diagnostics").then(({ runFullDiagnostics }) => {
     // Ejecutar después de que la página cargue
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', runFullDiagnostics);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", runFullDiagnostics);
     } else {
       setTimeout(runFullDiagnostics, 1000);
     }
@@ -21,9 +21,9 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
 
 // Link personalizado para logging
 const loggingLink = new ApolloLink((operation, forward) => {
-  console.log(`\n${'='.repeat(60)}`);
+  console.log(`\n${"=".repeat(60)}`);
   console.log(`📡 GraphQL Operation: ${operation.operationName}`);
-  console.log(`${'='.repeat(60)}`);
+  console.log(`${"=".repeat(60)}`);
   console.log(`📝 Query/Mutation:`, operation.query.loc?.source.body.substring(0, 200));
   console.log(`📋 Variables:`, operation.variables);
 
@@ -45,26 +45,26 @@ const loggingLink = new ApolloLink((operation, forward) => {
         observer.next(response);
       },
       error: (networkError: any) => {
-        console.error(`\n${'='.repeat(60)}`);
+        console.error(`\n${"=".repeat(60)}`);
         console.error(`❌ NETWORK ERROR`);
-        console.error(`${'='.repeat(60)}`);
-        
+        console.error(`${"=".repeat(60)}`);
+
         if (networkError.response) {
           console.error(`   HTTP Status: ${networkError.response.status}`);
           console.error(`   Status Text: ${networkError.response.statusText}`);
         }
-        
+
         if (networkError.message) {
           console.error(`   Message: ${networkError.message}`);
         }
-        
+
         console.error(`\n💡 Debugging tips:`);
         console.error(`   1. Check if gateway is running`);
         console.error(`   2. Verify GRAPHQL_URL in .env`);
         console.error(`   3. Check browser Network tab in DevTools`);
         console.error(`   4. Look for CORS errors`);
-        console.error(`${'='.repeat(60)}\n`);
-        
+        console.error(`${"=".repeat(60)}\n`);
+
         observer.error(networkError);
       },
       complete: () => observer.complete(),
@@ -75,21 +75,21 @@ const loggingLink = new ApolloLink((operation, forward) => {
 // HTTP Link
 const httpLink = new HttpLink({
   uri: GRAPHQL_URL,
-  credentials: 'omit', // FIXED: Changed from 'include' to 'omit' - gateway uses wildcard CORS
+  credentials: "omit", // FIXED: Changed from 'include' to 'omit' - gateway uses wildcard CORS
   fetchOptions: {
-    method: 'POST',
+    method: "POST",
   },
   // Mejorado: mejor manejo de errores HTTP
   fetch: async (uri, options) => {
     try {
       console.log(`🔗 Fetching: ${uri}`);
       const response = await fetch(uri, options);
-      
+
       if (!response.ok) {
         console.error(`❌ HTTP Error ${response.status}: ${response.statusText}`);
         console.error(`   URL: ${uri}`);
       }
-      
+
       return response;
     } catch (error) {
       console.error(`❌ Network Error:`, error);
@@ -141,15 +141,15 @@ export const apolloClient = new ApolloClient({
   }),
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'cache-and-network',
-      errorPolicy: 'all',
+      fetchPolicy: "cache-and-network",
+      errorPolicy: "all",
     },
     query: {
-      fetchPolicy: 'cache-first',
-      errorPolicy: 'all',
+      fetchPolicy: "no-cache",
+      errorPolicy: "all",
     },
     mutate: {
-      errorPolicy: 'all',
+      errorPolicy: "all",
     },
   },
 });

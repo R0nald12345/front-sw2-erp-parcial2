@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useOfertasEmpresa } from "@/src/hooks/erp/useOfertasEmpresa";
 import { EmpresaType, OfertaTrabajoType } from "@/src/types/erp/oferta-trabajo.types";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import {
   FaBriefcase,
   FaCalendar,
   FaGraduationCap,
+  FaChartBar,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 
@@ -23,6 +25,8 @@ interface DetalleEmpresaOfertasProps {
 }
 
 const DetalleEmpresaOfertas = ({ empresa, onBack }: DetalleEmpresaOfertasProps) => {
+  console.log("DetalleEmpresaOfertas: ", empresa);
+  const router = useRouter();
   const { ofertas, loading, error, eliminarOfertaTrabajo, crearOfertaTrabajo, actualizarOfertaTrabajo } =
     useOfertasEmpresa(empresa.id);
   const [showForm, setShowForm] = useState(false);
@@ -215,13 +219,20 @@ const DetalleEmpresaOfertas = ({ empresa, onBack }: DetalleEmpresaOfertasProps) 
       </div>
 
       {/* Botón Agregar */}
-      <div className="bg-linear-to-b from-blue-50 to-white px-6 md:px-12 py-6">
+      <div className="bg-linear-to-b from-blue-50 to-white px-6 md:px-12 py-6 flex gap-3 flex-wrap">
         <button
           onClick={handleAgregarOferta}
           className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
         >
           <FaPlus size={18} />
           Nueva Oferta de Trabajo
+        </button>
+        <button
+          onClick={() => router.push(`/dashboard/empresa/${empresa.id}/kpi`)}
+          className="inline-flex items-center gap-2 bg-linear-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+        >
+          <FaChartBar size={18} />
+          Ver KPIs y Analítica
         </button>
       </div>
 

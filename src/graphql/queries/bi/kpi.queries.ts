@@ -45,7 +45,7 @@ export const GET_JOB_CONVERSION_RATE_BY_PERIOD = `
 `;
 
 export const GET_CONVERSION_RATE_BY_COMPANY = `
-  query GetConversionRateByCompany($empresaId: String!) {
+  query($empresaId: String!) {
     conversionRateByCompany(empresaId: $empresaId) {
       empresaId
       empresaNombre
@@ -65,7 +65,7 @@ export const GET_CONVERSION_RATE_BY_COMPANY = `
 `;
 
 export const GET_ALL_COMPANIES_CONVERSION_RATE = `
-  query GetAllCompaniesConversionRate {
+  query {
     allCompaniesConversionRate {
       empresaId
       empresaNombre
@@ -146,7 +146,7 @@ export const GET_CANDIDATE_INTERVIEWS_OBJECTIVES_KPI = `
 `;
 
 export const GET_INTERVIEW_OBJECTIVES_BY_COMPANY = `
-  query GetInterviewObjectivesByCompany($empresaId: String!) {
+  query($empresaId: String!) {
     interviewObjectivesByCompany(empresaId: $empresaId) {
       empresaId
       empresaNombre
@@ -170,7 +170,7 @@ export const GET_INTERVIEW_OBJECTIVES_BY_COMPANY = `
 `;
 
 export const GET_ALL_COMPANIES_INTERVIEW_OBJECTIVES = `
-  query GetAllCompaniesInterviewObjectives {
+  query {
     allCompaniesInterviewObjectives {
       empresaId
       empresaNombre
@@ -266,7 +266,7 @@ export const GET_EVALUACIONES_BY_INTERVIEW = `
 `;
 
 export const GET_EVALUACIONES_BY_COMPANY = `
-  query GetEvaluacionesByCompany($empresaId: String!) {
+  query($empresaId: String!) {
     evaluacionesByCompany(empresaId: $empresaId) {
       empresaId
       empresaNombre
