@@ -37,8 +37,8 @@ export default function ClusterGrid({ clusters, onClusterClick }: ClusterGridPro
     return colors[clusterId % colors.length];
   };
 
-  // Sort clusters by size (largest first)
-  const sortedClusters = [...clusters].sort((a, b) => b.size - a.size);
+  // Sort clusters by ID (ascending order)
+  const sortedClusters = [...clusters].sort((a, b) => a.clusterId - b.clusterId);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

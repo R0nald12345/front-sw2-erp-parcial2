@@ -3,12 +3,14 @@
 ## 📋 Estado de la Implementación
 
 ### 1. **Dashboard Principal** ✅
+
 - **Archivo**: `src/app/dashboard/page.tsx`
 - **Cambio**: Agregada opción "Clustering de Candidatos" con icono 🔗
 - **Ubicación**: Menú principal del dashboard
 - **Link**: `/dashboard/clustering`
 
 ### 2. **Página de Clustering** ✅
+
 - **Archivo**: `src/app/dashboard/clustering/page.tsx`
 - **Estado**: Completamente implementada
 - **Ruta**: Accesible desde `/dashboard/clustering`
@@ -16,6 +18,7 @@
 ### 3. **Componentes Principales** ✅
 
 #### ClusteringReport.tsx
+
 - Componente contenedor principal
 - Carga todos los clusters usando hook personalizado
 - Muestra estadísticas generales:
@@ -25,6 +28,7 @@
   - Algoritmo (K-Means)
 
 #### ClusterGrid.tsx
+
 - Muestra los 13 clusters en un grid responsivo
 - Cada tarjeta muestra:
   - ID del cluster
@@ -35,6 +39,7 @@
 - Gradientes de colores personalizados por cluster
 
 #### CandidatesModal.tsx
+
 - Modal que se abre al hacer clic en un cluster
 - Muestra hasta 50 candidatos del cluster seleccionado
 - Funcionalidades:
@@ -45,6 +50,7 @@
   - **Acciones**: Contactar, Ver Perfil
 
 ### 4. **Hooks Personalizados** ✅
+
 - **Archivo**: `src/hooks/bi/useClustering.ts`
 - **Funciones**:
   - `useClusteringData()`: Carga todos los clusters
@@ -52,6 +58,7 @@
 - **Queries GraphQL**: Completamente definidas y tipadas
 
 ### 5. **Rutas y Configuración** ✅
+
 - Todos los imports usan la ruta correcta: `@/src/`
 - tsconfig.json correctamente configurado con alias `@/*`
 - Componentes exportados desde `src/components/bi/index.ts`
@@ -76,6 +83,7 @@
 ## 📊 Datos Visualizados
 
 ### Información del Análisis
+
 - **Total de Candidatos**: 9,907
 - **Clusters Identificados**: 13
 - **Algoritmo**: K-Means
@@ -84,6 +92,7 @@
 - **Davies-Bouldin Score**: 0.967
 
 ### Clusters Principales
+
 1. **Cluster 0**: 382 candidatos (3.9%) - Especialistas en React/Node
 2. **Cluster 1**: 492 candidatos (5.0%) - Certificados Google
 3. **Cluster 2**: 357 candidatos (3.6%) - Especialistas en GitLab/GitHub
@@ -91,7 +100,9 @@
 5. ... (8 clusters más)
 
 ### Información de Candidatos
+
 Por cada candidato se muestra:
+
 - ✅ Nombre completo
 - ✅ Email de contacto
 - ✅ Años de experiencia
@@ -107,12 +118,13 @@ Por cada candidato se muestra:
 ## 🔧 Queries GraphQL Implementadas
 
 ### Query 1: Analizar Clusters
+
 ```graphql
 query AnalyzeCandidateClusters {
-  analyzeCandidateClusters(input: { 
+  analyzeCandidateClusters(input: {
     algorithm: "kmeans"
     maxResults: 10
-    includeOutliers: false 
+    includeOutliers: false
   }) {
     totalCandidates
     clustersFound
@@ -123,9 +135,10 @@ query AnalyzeCandidateClusters {
 ```
 
 ### Query 2: Obtener Candidatos en Cluster
+
 ```graphql
 query GetCandidatesInCluster($clusterId: Int!) {
-  getCandidatesInCluster(input: { 
+  getCandidatesInCluster(input: {
     clusterId: $clusterId
     algorithm: "kmeans"
     limit: 50
@@ -163,16 +176,19 @@ src/
 ## ✨ Características Visuales
 
 ### Colores por Cluster
+
 - Cada cluster tiene un gradiente único
 - 13 colores diferentes para mejor distinción
 - Responden a hover con efecto scale
 
 ### Diseño Responsivo
+
 - **Desktop**: Grid de 3 columnas
-- **Tablet**: Grid de 2 columnas  
+- **Tablet**: Grid de 2 columnas
 - **Mobile**: 1 columna con cards optimizadas
 
 ### Modal de Candidatos
+
 - Modal centrado con backdrop oscuro
 - Scrollable si hay muchos candidatos
 - Header con información del cluster
@@ -183,11 +199,13 @@ src/
 ## 🎯 Próximos Pasos (Opcional)
 
 1. **Ejecutar el frontend**:
+
    ```bash
    npm run dev
    ```
 
 2. **Navegar a**:
+
    ```
    http://localhost:3000/dashboard/clustering
    ```
