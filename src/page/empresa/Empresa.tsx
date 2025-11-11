@@ -1,4 +1,4 @@
-import HeaderEmpresa from "@/src/components/empresa/HeaderEmpresa"
+//import HeaderEmpresa from "@/src/components/empresa/HeaderEmpresa"
 import ListEmpresa from "@/src/components/empresa/ListadoGeneralEmpresa"
 
 
