@@ -34,6 +34,7 @@ export const PREDICT_CUSTOM_COMPATIBILITY = `
       recommendation
       summary
       strengths
+      weaknesses
       suggestions
     }
   }

@@ -4,6 +4,7 @@ export interface CompatibilityResponse {
   recommendation: string;
   summary: string;
   strengths: string[];
+  weaknesses: string[];
   suggestions: string[];
 }
 

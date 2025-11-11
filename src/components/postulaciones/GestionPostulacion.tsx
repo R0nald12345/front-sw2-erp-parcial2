@@ -153,7 +153,7 @@ const GestionPostulacion = () => {
         ubicacion: "Santa Cruz de la Sierra",
         requisitos: "Ingeniería en Sistemas",
       };
-
+      console.log("🔍 Obteniendo compatibilidad para:", variables);
       const response = await executeQuery<{ predictCustomCompatibility: CompatibilityResponse }>(
         PREDICT_CUSTOM_COMPATIBILITY,
         variables
@@ -413,6 +413,22 @@ const GestionPostulacion = () => {
                               {strength}
                             </li>
                           ))}
+                        </ul>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-3 border border-red-100">
+                        <p className="text-xs font-semibold text-red-700 mb-2">⚠️ Debilidades:</p>
+                        <ul className="space-y-1">
+                          {compatibilityData.weaknesses && compatibilityData.weaknesses.length > 0 ? (
+                            compatibilityData.weaknesses.map((weakness, idx) => (
+                              <li key={idx} className="text-xs text-red-600 flex items-start gap-2">
+                                <span className="text-red-500 mt-1">✗</span>
+                                {weakness}
+                              </li>
+                            ))
+                          ) : (
+                            <li className="text-xs text-gray-600">No hay debilidades identificadas</li>
+                          )}
                         </ul>
                       </div>
 
