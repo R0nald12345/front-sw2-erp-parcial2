@@ -112,47 +112,47 @@ const FormOfertaTrabajo = ({ oferta, empresaId, onSubmit, onCancel }: FormOferta
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="card-modern max-w-2xl w-full p-8 animate-fade-in-up my-8">
-        <h2 className="text-2xl font-bold text-gradient mb-6">
-          {oferta ? "✏️ Editar Oferta de Trabajo" : "🆕 Nueva Oferta de Trabajo"}
-        </h2>
+      <div className="card-modern max-w-lg w-full p-6 animate-fade-in-up my-4">
+        <h2 className="text-xl font-bold text-gradient mb-4">{oferta ? "✏️ Editar Oferta" : "🆕 Nueva Oferta"}</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Campo Título */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Título de la Posición *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Título de la Posición *</label>
             <input
               type="text"
               name="titulo"
               value={formData.titulo}
               onChange={handleChange}
               placeholder="Ej: Desarrollador Full Stack"
-              className={`input-modern w-full ${errors.titulo ? "border-red-500 ring-red-500" : ""}`}
+              className={`input-modern w-full text-sm ${errors.titulo ? "border-red-500 ring-red-500" : ""}`}
               disabled={loading}
             />
-            {errors.titulo && <p className="text-red-500 text-sm mt-2 font-medium">{errors.titulo}</p>}
+            {errors.titulo && <p className="text-red-500 text-xs mt-1 font-medium">{errors.titulo}</p>}
           </div>
 
           {/* Campo Descripción */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Descripción *</label>
             <textarea
               name="descripcion"
               value={formData.descripcion}
               onChange={handleChange}
-              placeholder="Describe el puesto, responsabilidades y detalles importantes..."
-              rows={4}
-              className={`input-modern w-full ${errors.descripcion ? "border-red-500 ring-red-500" : ""}`}
+              placeholder="Describe el puesto..."
+              rows={3}
+              className={`input-modern w-full text-sm resize-none ${
+                errors.descripcion ? "border-red-500 ring-red-500" : ""
+              }`}
               disabled={loading}
             />
-            {errors.descripcion && <p className="text-red-500 text-sm mt-2 font-medium">{errors.descripcion}</p>}
+            {errors.descripcion && <p className="text-red-500 text-xs mt-1 font-medium">{errors.descripcion}</p>}
           </div>
 
           {/* Grid: Salario y Ubicación */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Campo Salario */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Salario (Bs.) *</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Salario (Bs.) *</label>
               <input
                 type="number"
                 name="salario"
@@ -161,68 +161,70 @@ const FormOfertaTrabajo = ({ oferta, empresaId, onSubmit, onCancel }: FormOferta
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className={`input-modern w-full ${errors.salario ? "border-red-500 ring-red-500" : ""}`}
+                className={`input-modern w-full text-sm ${errors.salario ? "border-red-500 ring-red-500" : ""}`}
                 disabled={loading}
               />
-              {errors.salario && <p className="text-red-500 text-sm mt-2 font-medium">{errors.salario}</p>}
+              {errors.salario && <p className="text-red-500 text-xs mt-1 font-medium">{errors.salario}</p>}
             </div>
 
             {/* Campo Ubicación */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Ubicación *</label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Ubicación *</label>
               <input
                 type="text"
                 name="ubicacion"
                 value={formData.ubicacion}
                 onChange={handleChange}
-                placeholder="Ej: Santa Cruz de la Sierra"
-                className={`input-modern w-full ${errors.ubicacion ? "border-red-500 ring-red-500" : ""}`}
+                placeholder="Ej: Santa Cruz"
+                className={`input-modern w-full text-sm ${errors.ubicacion ? "border-red-500 ring-red-500" : ""}`}
                 disabled={loading}
               />
-              {errors.ubicacion && <p className="text-red-500 text-sm mt-2 font-medium">{errors.ubicacion}</p>}
+              {errors.ubicacion && <p className="text-red-500 text-xs mt-1 font-medium">{errors.ubicacion}</p>}
             </div>
           </div>
 
           {/* Campo Requisitos */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Requisitos *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Requisitos *</label>
             <textarea
               name="requisitos"
               value={formData.requisitos}
               onChange={handleChange}
-              placeholder="Lista los requisitos, experiencias y habilidades necesarias..."
-              rows={3}
-              className={`input-modern w-full ${errors.requisitos ? "border-red-500 ring-red-500" : ""}`}
+              placeholder="Lista requisitos, experiencias..."
+              rows={2}
+              className={`input-modern w-full text-sm resize-none ${
+                errors.requisitos ? "border-red-500 ring-red-500" : ""
+              }`}
               disabled={loading}
             />
-            {errors.requisitos && <p className="text-red-500 text-sm mt-2 font-medium">{errors.requisitos}</p>}
+            {errors.requisitos && <p className="text-red-500 text-xs mt-1 font-medium">{errors.requisitos}</p>}
           </div>
 
           {/* Campo Fecha de Publicación */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Publicación *</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Fecha de Publicación *</label>
             <input
               type="date"
               name="fechaPublicacion"
               value={formData.fechaPublicacion}
               onChange={handleChange}
-              className={`input-modern w-full ${errors.fechaPublicacion ? "border-red-500 ring-red-500" : ""}`}
+              className={`input-modern w-full text-sm ${errors.fechaPublicacion ? "border-red-500 ring-red-500" : ""}`}
               disabled={loading}
             />
             {errors.fechaPublicacion && (
-              <p className="text-red-500 text-sm mt-2 font-medium">{errors.fechaPublicacion}</p>
+              <p className="text-red-500 text-xs mt-1 font-medium">{errors.fechaPublicacion}</p>
             )}
           </div>
 
           {/* Botones */}
-          <div className="flex gap-3 mt-8 pt-4 border-t border-gray-200">
-            <button type="button" onClick={onCancel} disabled={loading} className="btn-secondary flex-1">
+          <div className="flex gap-2 mt-5 pt-3 border-t border-gray-200">
+            <button type="button" onClick={onCancel} disabled={loading} className="btn-secondary flex-1 text-sm py-2">
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex-1 flex items-center justify-center gap-2"
+              className="btn-primary flex-1 flex items-center justify-center gap-2 text-sm py-2"
             >
               {loading ? (
                 <>

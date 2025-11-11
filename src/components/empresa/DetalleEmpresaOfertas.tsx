@@ -4,7 +4,17 @@ import { useOfertasEmpresa } from "@/src/hooks/erp/useOfertasEmpresa";
 import { EmpresaType, OfertaTrabajoType } from "@/src/types/erp/oferta-trabajo.types";
 import { useState } from "react";
 import FormOfertaTrabajo from "../ofertaTrabajo/FormOfertaTrabajo";
-import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaEye,
+  FaDollarSign,
+  FaBriefcase,
+  FaCalendar,
+  FaGraduationCap,
+} from "react-icons/fa";
 import Swal from "sweetalert2";
 
 interface DetalleEmpresaOfertasProps {
@@ -163,26 +173,53 @@ const DetalleEmpresaOfertas = ({ empresa, onBack }: DetalleEmpresaOfertasProps) 
 
   return (
     <>
-      {/* Header */}
-      <div className="bg-gradient-primary text-white px-4 md:px-6 py-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
-          >
-            <FaArrowLeft size={18} />
-            <span className="font-medium">Volver</span>
-          </button>
+      {/* Header Moderno */}
+      <div className="relative overflow-hidden bg-linear-to-r from-blue-600 via-blue-500 to-purple-600 text-white">
+        {/* Fondo decorativo */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
-        <h1 className="text-3xl font-bold">🏢 {empresa.nombre}</h1>
-        <p className="text-white/80 mt-2">
-          {empresa.rubro} • {empresa.correo}
-        </p>
+
+        <div className="relative z-10 px-6 md:px-12 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+            >
+              <FaArrowLeft size={18} />
+              <span className="font-medium">Volver</span>
+            </button>
+            <div className="text-sm font-semibold px-4 py-2 bg-white/20 rounded-full backdrop-blur-md">
+              {ofertas.length} {ofertas.length === 1 ? "Oferta" : "Ofertas"} Disponibles
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-linear-to-br from-purple-300 to-blue-300 rounded-xl flex items-center justify-center text-2xl shadow-lg">
+              🏢
+            </div>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{empresa.nombre}</h1>
+              <p className="text-white/90 mt-2 flex flex-wrap gap-4">
+                <span className="flex items-center gap-1">
+                  <FaBriefcase size={14} />
+                  {empresa.rubro}
+                </span>
+                <span className="text-white/70">•</span>
+                <span className="flex items-center gap-1 truncate">{empresa.correo}</span>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Botón Agregar */}
-      <div className="px-4 md:px-6 mb-6">
-        <button onClick={handleAgregarOferta} className="btn-primary flex items-center gap-2">
+      <div className="bg-linear-to-b from-blue-50 to-white px-6 md:px-12 py-6">
+        <button
+          onClick={handleAgregarOferta}
+          className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+        >
           <FaPlus size={18} />
           Nueva Oferta de Trabajo
         </button>
@@ -200,134 +237,129 @@ const DetalleEmpresaOfertas = ({ empresa, onBack }: DetalleEmpresaOfertasProps) 
 
       {/* Error */}
       {error && (
-        <div className="alert-error mx-4 md:mx-6 mb-6">
-          <span className="font-semibold">Error al cargar</span>
-          <p className="text-sm mt-1">{error}</p>
+        <div className="mx-6 md:mx-12 mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+          <p className="text-red-800 font-semibold">Error al cargar</p>
+          <p className="text-red-700 text-sm mt-1">{error}</p>
         </div>
       )}
 
-      <main className="w-full px-4 md:px-6">
+      <main className="bg-linear-to-b from-blue-50 via-white to-purple-50 min-h-screen px-6 md:px-12 py-8">
         {/* Empty State */}
         {ofertas.length === 0 && (
-          <div className="mx-4 md:mx-6 mb-6">
-            <div className="card-modern p-12 text-center">
-              <div className="text-6xl mb-4">📭</div>
-              <h4 className="text-xl font-semibold text-gray-700 mb-2">No hay ofertas de trabajo</h4>
-              <p className="text-gray-600 mb-6">Esta empresa aún no tiene ofertas publicadas</p>
-              <button onClick={handleAgregarOferta} className="btn-primary inline-flex items-center gap-2">
-                <FaPlus size={16} />
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center max-w-md">
+              <div className="text-8xl mb-6 animate-bounce">📭</div>
+              <h4 className="text-2xl font-bold text-gray-800 mb-3">No hay ofertas de trabajo</h4>
+              <p className="text-gray-600 mb-8">
+                Esta empresa aún no tiene ofertas publicadas. ¡Sé el primero en crear una!
+              </p>
+              <button
+                onClick={handleAgregarOferta}
+                className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+              >
+                <FaPlus size={18} />
                 Crear Primera Oferta
               </button>
             </div>
           </div>
         )}
 
-        {/* Desktop Table View */}
+        {/* Cards View - Todos los dispositivos */}
         {ofertas.length > 0 && (
-          <div className="hidden md:block mx-4 md:mx-6 mb-6">
-            <div className="card-modern overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gradient-primary border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Posición</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Ubicación</th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">Salario (Bs.)</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Publicado</th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ofertas.map((oferta, index) => (
-                    <tr
-                      key={oferta.id}
-                      className={`${
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } border-b border-gray-200 hover:bg-blue-50 transition-colors`}
-                    >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{oferta.titulo}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{oferta.ubicacion}</td>
-                      <td className="px-6 py-4 text-sm font-bold text-green-600 text-center">
-                        Bs. {oferta.salario.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {new Date(oferta.fechaPublicacion).toLocaleDateString("es-ES")}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-3">
-                          <button onClick={() => handleView(oferta)} className="btn-outline-small" title="Ver oferta">
-                            <FaEye size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleEdit(oferta)}
-                            className="btn-outline-small text-blue-600 hover:text-blue-700"
-                            title="Editar oferta"
-                          >
-                            <FaEdit size={16} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(oferta.id)}
-                            className="btn-outline-small text-red-600 hover:text-red-700"
-                            title="Eliminar oferta"
-                          >
-                            <FaTrash size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Mobile Card View */}
-        {ofertas.length > 0 && (
-          <div className="md:hidden mx-4 mb-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ofertas.map((oferta) => (
-              <div key={oferta.id} className="card-modern p-4">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-lg text-gray-900">{oferta.titulo}</h4>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(oferta.fechaPublicacion).toLocaleDateString("es-ES")}
-                  </p>
-                </div>
+              <div
+                key={oferta.id}
+                className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100"
+              >
+                {/* Gradiente en la parte superior */}
+                <div className="h-2 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600"></div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-gray-200">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Ubicación</p>
-                    <p className="text-sm font-medium text-gray-900">{oferta.ubicacion}</p>
+                {/* Contenido */}
+                <div className="p-6">
+                  {/* Categoría */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold mb-3">
+                    <FaBriefcase size={12} />
+                    {oferta.ubicacion}
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Salario</p>
-                    <p className="text-sm font-bold text-green-600">Bs. {oferta.salario.toFixed(2)}</p>
+
+                  {/* Título */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {oferta.titulo}
+                  </h3>
+
+                  {/* Descripción */}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">{oferta.descripcion}</p>
+
+                  {/* Info Grid */}
+                  <div className="grid grid-cols-2 gap-4 mb-5 pb-5 border-b border-gray-200">
+                    {/* Salario */}
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold mb-1">
+                        <FaDollarSign size={14} className="text-green-600" />
+                        SALARIO
+                      </div>
+                      <p className="text-lg font-bold text-green-600">Bs. {oferta.salario.toFixed(2)}</p>
+                    </div>
+
+                    {/* Fecha */}
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold mb-1">
+                        <FaCalendar size={14} className="text-purple-600" />
+                        PUBLICADO
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {new Date(oferta.fechaPublicacion).toLocaleDateString("es-ES", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{oferta.descripcion}</p>
+                  {/* Requisitos Preview */}
+                  <div className="mb-5">
+                    <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold mb-2">
+                      <FaGraduationCap size={14} className="text-orange-600" />
+                      REQUISITOS
+                    </div>
+                    <p className="text-sm text-gray-600 line-clamp-2">{oferta.requisitos}</p>
+                  </div>
 
-                <div className="flex gap-2">
-                  <button onClick={() => handleView(oferta)} className="flex-1 btn-primary-small" title="Ver oferta">
-                    <FaEye size={14} className="mr-2" />
-                    Ver
-                  </button>
-                  <button
-                    onClick={() => handleEdit(oferta)}
-                    className="flex-1 btn-secondary-small"
-                    title="Editar oferta"
-                  >
-                    <FaEdit size={14} className="mr-2" />
-                    Editar
-                  </button>
+                  {/* Botones de Acción */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleView(oferta)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-sm hover:shadow-md hover:scale-105 active:scale-95"
+                      title="Ver oferta"
+                    >
+                      <FaEye size={14} />
+                      Ver
+                    </button>
+                    <button
+                      onClick={() => handleEdit(oferta)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-purple-100 hover:bg-purple-600 text-purple-600 hover:text-white px-3 py-2 rounded-lg font-semibold transition-all duration-300 text-sm hover:shadow-md hover:scale-105 active:scale-95"
+                      title="Editar oferta"
+                    >
+                      <FaEdit size={14} />
+                      Editar
+                    </button>
+                  </div>
+
+                  {/* Botón Eliminar más prominente */}
                   <button
                     onClick={() => handleDelete(oferta.id)}
-                    className="flex-1 btn-danger-small"
+                    className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-2.5 rounded-lg font-semibold transition-all duration-300 text-sm hover:shadow-lg hover:scale-105 active:scale-95 mt-3 border-2 border-red-600 hover:border-red-700"
                     title="Eliminar oferta"
                   >
-                    <FaTrash size={14} className="mr-2" />
-                    Eliminar
+                    <FaTrash size={16} />
+                    Eliminar Oferta
                   </button>
                 </div>
+
+                {/* Esquina decorativa */}
+                <div className="absolute top-0 right-0 w-12 h-12 bg-linear-to-br from-blue-600/10 to-purple-600/10 rounded-bl-2xl"></div>
               </div>
             ))}
           </div>
