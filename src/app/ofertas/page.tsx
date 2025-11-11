@@ -35,12 +35,7 @@ export default function OfertasPage() {
     setSelectedOffer(null);
   };
 
-  const handleSubmitApplication = async (formData: {
-    name: string;
-    email: string;
-    phone: string;
-    cv: File | null;
-  }) => {
+  const handleSubmitApplication = async (formData: { name: string; email: string; phone: string; cv: File | null }) => {
     if (selectedOffer) {
       try {
         // Aquí puedes agregar la lógica para enviar la postulación al API
@@ -54,20 +49,9 @@ export default function OfertasPage() {
           },
         ]);
 
-        Swal.fire({
-          title: "¡Éxito!",
-          text: "Tu postulación ha sido enviada correctamente",
-          icon: "success",
-        });
-
         setSelectedOffer(null);
       } catch (error) {
         console.error("Error submitting application:", error);
-        Swal.fire({
-          title: "Error",
-          text: "Hubo un error al enviar tu postulación",
-          icon: "error",
-        });
       }
     }
   };
@@ -91,17 +75,12 @@ export default function OfertasPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 mb-4">
             <Briefcase className="w-8 h-8" />
-            <span className="text-sm font-semibold tracking-widest opacity-90">
-              OPORTUNIDADES LABORALES
-            </span>
+            <span className="text-sm font-semibold tracking-widest opacity-90">OPORTUNIDADES LABORALES</span>
           </div>
-          <h1 className="text-5xl font-bold mb-3 text-pretty">
-            Encuentra tu próxima oportunidad
-          </h1>
+          <h1 className="text-5xl font-bold mb-3 text-pretty">Encuentra tu próxima oportunidad</h1>
           <p className="text-lg opacity-90 max-w-2xl">
-            Explora{" "}
-            <span className="font-bold text-blue-100">{ofertas.length}</span>{" "}
-            ofertas de empleo exclusivas y únete a equipos innovadores en tecnología
+            Explora <span className="font-bold text-blue-100">{ofertas.length}</span> ofertas de empleo exclusivas y
+            únete a equipos innovadores en tecnología
           </p>
         </div>
       </div>
@@ -139,19 +118,13 @@ export default function OfertasPage() {
           ) : filteredOffers.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredOffers.map((offer) => (
-                <JobOffersCard
-                  key={offer.id}
-                  offer={offer}
-                  onApply={() => handleOpenOffer(offer)}
-                />
+                <JobOffersCard key={offer.id} offer={offer} onApply={() => handleOpenOffer(offer)} />
               ))}
             </div>
           ) : (
             <div className="text-center py-16 bg-white border-2 border-gray-200 rounded-2xl shadow-lg">
               <div className="text-5xl mb-4">🔍</div>
-              <p className="text-gray-600 text-lg mb-6">
-                No encontramos ofertas que coincidan con tu búsqueda
-              </p>
+              <p className="text-gray-600 text-lg mb-6">No encontramos ofertas que coincidan con tu búsqueda</p>
               <button
                 onClick={() => {
                   setSearchTerm("");
@@ -185,27 +158,17 @@ export default function OfertasPage() {
                         <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-lg">
                           {app.name}
                         </h3>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {app.email}
-                        </p>
+                        <p className="text-xs text-gray-500 mt-1">{app.email}</p>
                       </div>
                       <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                         ✓ Enviada
                       </span>
                     </div>
                     <div className="mt-5 pt-5 border-t-2 border-gray-100">
-                      <p className="text-xs text-gray-500 font-semibold mb-2 uppercase tracking-wider">
-                        Oferta:
-                      </p>
-                      <p className="font-bold text-blue-600 text-base">
-                        {offer?.titulo}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-3">
-                        💼 {offer?.empresa?.nombre}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        📍 {offer?.ubicacion}
-                      </p>
+                      <p className="text-xs text-gray-500 font-semibold mb-2 uppercase tracking-wider">Oferta:</p>
+                      <p className="font-bold text-blue-600 text-base">{offer?.titulo}</p>
+                      <p className="text-xs text-gray-600 mt-3">💼 {offer?.empresa?.nombre}</p>
+                      <p className="text-xs text-gray-600 mt-1">📍 {offer?.ubicacion}</p>
                     </div>
                   </div>
                 );
@@ -218,23 +181,15 @@ export default function OfertasPage() {
         {userApplications.length === 0 && !loading && (
           <div className="mt-16 text-center py-12 bg-white rounded-2xl shadow-lg border-2 border-gray-200">
             <div className="text-5xl mb-4">📝</div>
-            <p className="text-gray-600 text-lg">
-              Aún no has enviado ninguna postulación
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              ¡Empieza a aplicar a las ofertas que te interesen!
-            </p>
+            <p className="text-gray-600 text-lg">Aún no has enviado ninguna postulación</p>
+            <p className="text-gray-500 text-sm mt-2">¡Empieza a aplicar a las ofertas que te interesen!</p>
           </div>
         )}
       </div>
 
       {/* Modal de Postulación */}
       {selectedOffer && (
-        <ApplicationModal
-          offer={selectedOffer}
-          onClose={handleCloseModal}
-          onSubmit={handleSubmitApplication}
-        />
+        <ApplicationModal offer={selectedOffer} onClose={handleCloseModal} onSubmit={handleSubmitApplication} />
       )}
     </div>
   );

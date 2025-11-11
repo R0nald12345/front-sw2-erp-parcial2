@@ -5,7 +5,7 @@ import { X, Upload, Loader } from "lucide-react";
 import Swal from "sweetalert2";
 
 interface Offer {
-  id: string;
+  id: string; // ofertaId
   titulo: string;
   descripcion: string;
   salario?: number;
@@ -19,19 +19,10 @@ interface Offer {
 interface ApplicationModalProps {
   offer: Offer;
   onClose: () => void;
-  onSubmit: (formData: {
-    name: string;
-    email: string;
-    phone: string;
-    cv: File | null;
-  }) => void;
+  onSubmit: (formData: { name: string; email: string; phone: string; cv: File | null }) => void;
 }
 
-export function ApplicationModal({
-  offer,
-  onClose,
-  onSubmit,
-}: ApplicationModalProps) {
+export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -42,9 +33,7 @@ export function ApplicationModal({
   });
   const [cvFileName, setCvFileName] = useState("");
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -139,13 +128,29 @@ export function ApplicationModal({
 
     try {
       setLoading(true);
+
+      // Crear FormData para enviar el CV y el ofertaId
+      const formDataToSend = new FormData();
+      formDataToSend.append("pdf0", formData.cv as File);
+      formDataToSend.append("ofertaId", offer.id);
+
+      // Hacer la petición HTTP
+      const response = await fetch("https://automatization-n8n-n8n.hnlumc.easypanel.host/webhook/form", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar la postulación");
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 500)); // Simular delay
 
       onSubmit({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        cv: formData.cv,
+        cv: formData.cv, // pdf0
       });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -233,13 +238,7 @@ export function ApplicationModal({
                 Adjuntar CV (PDF) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="cv-input"
-                />
+                <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" id="cv-input" />
                 <label
                   htmlFor="cv-input"
                   className={`flex items-center justify-center gap-3 w-full px-6 py-4 bg-linear-to-br from-blue-50 to-purple-50 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
@@ -261,9 +260,7 @@ export function ApplicationModal({
 
             {/* Mensaje */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Mensaje (Opcional)
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Mensaje (Opcional)</label>
               <textarea
                 name="message"
                 value={formData.message}
@@ -276,16 +273,16 @@ export function ApplicationModal({
 
             {/* Detalles de la Oferta - Card mejorada */}
             <div className="bg-linear-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 space-y-3">
-              <p className="text-xs font-bold text-blue-700 uppercase tracking-wider">
-                📋 Detalles de la Oferta
-              </p>
+              <p className="text-xs font-bold text-blue-700 uppercase tracking-wider">📋 Detalles de la Oferta</p>
               <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 text-sm">💼 Empresa:</span>
+                  <span className="font-semibold text-gray-800">{offer.empresa?.nombre}</span>
+                </div>
                 {offer.salario && (
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 text-sm">Salario:</span>
-                    <span className="font-bold text-lg text-blue-600">
-                      ${offer.salario.toLocaleString("es-ES")}
-                    </span>
+                    <span className="text-gray-600 text-sm">💰 Salario:</span>
+                    <span className="font-bold text-lg text-blue-600">${offer.salario.toLocaleString("es-ES")}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center">
@@ -297,6 +294,10 @@ export function ApplicationModal({
                   <span className="font-semibold text-gray-800 text-right break-all max-w-xs">
                     {offer.empresa?.correo}
                   </span>
+                </div>
+                <div className="flex justify-between items-start pt-2 border-t border-blue-200">
+                  <span className="text-gray-600 text-sm">📝 Descripción:</span>
+                  <span className="text-gray-700 text-sm text-right max-w-xs line-clamp-3">{offer.descripcion}</span>
                 </div>
               </div>
             </div>
