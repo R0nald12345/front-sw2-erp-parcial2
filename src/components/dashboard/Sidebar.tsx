@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { RiAlignRight } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
@@ -8,25 +8,17 @@ import { FaProjectDiagram } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+interface MenuItem {
+  icon: React.ComponentType<{ className?: string }>;
+  text: string;
+  path: string;
+}
+
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
-  const [rol, setRol] = useState<string>("");
   const pathname = usePathname();
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("auth-storage");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        const userRol = parsed?.state?.user?.rol || "";
-        setRol(userRol);
-      }
-    } catch (err) {
-      console.error("Error al leer el rol:", err);
-    }
-  }, []);
-
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { icon: MdDashboard, text: "Inicio", path: "inicio" },
     { icon: MdDashboard, text: "Empresa", path: "empresa" },
     { icon: MdDashboard, text: "Oferta Trabajo", path: "oferta-trabajo" },
@@ -37,7 +29,7 @@ const Sidebar = () => {
     { icon: MdDashboard, text: "Reportes", path: "reporte" },
   ];
 
-  const isItemActive = (item: any) => {
+  const isItemActive = (item: MenuItem) => {
     const current = (pathname || "").replace(/\/$/, "");
     const fullPath = `/dashboard/${item.path}`.replace(/\/$/, "");
     return current === fullPath;
@@ -57,7 +49,7 @@ const Sidebar = () => {
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-2">
             {menuItems.map((item, index) => {
-              const Icon = item.icon as any;
+              const Icon = item.icon;
               const isActive = isItemActive(item);
 
               return (
@@ -87,10 +79,7 @@ const Sidebar = () => {
       </button>
 
       {sidebar && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setSidebar(false)}
-        />
+        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setSidebar(false)} />
       )}
     </>
   );
