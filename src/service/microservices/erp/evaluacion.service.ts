@@ -19,6 +19,94 @@ interface DeleteEvaluacionResponse {
   deleteEvaluacion: string;
 }
 
+// KPI Interfaces
+interface EvaluacionKPIData {
+  evaluacionId: string;
+  candidateName: string;
+  entrevistador: string;
+  interviewDate: string;
+  calificacionTecnica: number;
+  calificacionActitud: number;
+  calificacionGeneral: number;
+  interpretation: string;
+  qualityLevel: string;
+}
+
+interface EvaluacionKPIResponse {
+  evaluacionKPI: EvaluacionKPIData;
+}
+
+interface EvaluacionStats {
+  evaluacionId: string;
+  candidateName: string;
+  entrevistador: string;
+  interviewDate: string;
+  calificacionTecnica: number;
+  calificacionActitud: number;
+  calificacionGeneral: number;
+  interpretation: string;
+  qualityLevel: string;
+}
+
+interface AllEvaluacionesKPIResponse {
+  allEvaluacionesKPI: {
+    totalEvaluaciones: number;
+    promedioCaliTecnica: number;
+    promedioCaliActitud: number;
+    promedioCaliGeneral: number;
+    excelente: number;
+    buena: number;
+    aceptable: number;
+    pobre: number;
+    evaluacionStats: EvaluacionStats[];
+  };
+}
+
+interface EvaluacionesByInterviewResponse {
+  evaluacionesByInterview: {
+    entrevistaId: string;
+    candidateName: string;
+    entrevistador: string;
+    interviewDate: string;
+    totalEvaluaciones: number;
+    promedioCaliTecnica: number;
+    promedioCaliActitud: number;
+    promedioCaliGeneral: number;
+    evaluaciones: EvaluacionKPIData[];
+  };
+}
+
+interface EvaluacionesByCompanyResponse {
+  evaluacionesByCompany: {
+    empresaId: string;
+    empresaNombre: string;
+    totalEvaluaciones: number;
+    promedioCaliTecnica: number;
+    promedioCaliActitud: number;
+    promedioCaliGeneral: number;
+    excelente: number;
+    buena: number;
+    aceptable: number;
+    pobre: number;
+    evaluaciones: EvaluacionKPIData[];
+  };
+}
+
+interface EvaluacionesByInterviewerResponse {
+  evaluacionesByInterviewer: {
+    entrevistador: string;
+    totalEvaluaciones: number;
+    promedioCaliTecnica: number;
+    promedioCaliActitud: number;
+    promedioCaliGeneral: number;
+    excelente: number;
+    buena: number;
+    aceptable: number;
+    pobre: number;
+    evaluaciones: EvaluacionKPIData[];
+  };
+}
+
 export const evaluacionService = {
   async getEvaluaciones(limit: number = 10): Promise<EvaluacionType[]> {
     try {
@@ -126,6 +214,138 @@ export const evaluacionService = {
       return result.deleteEvaluacion;
     } catch (error) {
       console.error(`❌ Error deleting evaluación ${id}:`, error);
+      throw error;
+    }
+  },
+
+  // KPI Methods
+  async getEvaluacionKPI(evaluacionId: string): Promise<EvaluacionKPIData | null> {
+    try {
+      console.log(`\n📊 SERVICE KPI: Fetching evaluación KPI: ${evaluacionId}`);
+
+      if (!evaluacionId || evaluacionId.trim() === '') {
+        throw new Error('Invalid evaluación ID');
+      }
+
+      const result = await executeQuery<EvaluacionKPIResponse>(
+        EvaluacionQueries.EVALUACION_KPI,
+        { evaluacionId }
+      );
+
+      if (!result?.evaluacionKPI) {
+        console.warn(`⚠️ Evaluación KPI ${evaluacionId} not found`);
+        return null;
+      }
+
+      console.log('✅ Evaluación KPI fetched:', result.evaluacionKPI.candidateName);
+      return result.evaluacionKPI;
+    } catch (error) {
+      console.error(`❌ Error fetching evaluación KPI ${evaluacionId}:`, error);
+      throw error;
+    }
+  },
+
+  async getAllEvaluacionesKPI() {
+    try {
+      console.log(`\n📊 SERVICE KPI: Fetching all evaluaciones KPI`);
+
+      const result = await executeQuery<AllEvaluacionesKPIResponse>(
+        EvaluacionQueries.ALL_EVALUACIONES_KPI
+      );
+
+      if (!result?.allEvaluacionesKPI) {
+        console.warn('⚠️ No evaluaciones KPI returned');
+        return null;
+      }
+
+      console.log(`✅ ${result.allEvaluacionesKPI.totalEvaluaciones} evaluaciones KPI fetched`);
+      return result.allEvaluacionesKPI;
+    } catch (error) {
+      console.error('❌ Error fetching all evaluaciones KPI:', error);
+      throw error;
+    }
+  },
+
+  async getEvaluacionesByInterview(entrevistaId: string) {
+    try {
+      console.log(`\n📊 SERVICE KPI: Fetching evaluaciones by interview: ${entrevistaId}`);
+
+      if (!entrevistaId || entrevistaId.trim() === '') {
+        throw new Error('Invalid entrevista ID');
+      }
+
+      const result = await executeQuery<EvaluacionesByInterviewResponse>(
+        EvaluacionQueries.EVALUACIONES_BY_INTERVIEW,
+        { entrevistaId }
+      );
+
+      if (!result?.evaluacionesByInterview) {
+        console.warn(`⚠️ Evaluaciones for interview ${entrevistaId} not found`);
+        return null;
+      }
+
+      console.log(
+        `✅ ${result.evaluacionesByInterview.totalEvaluaciones} evaluaciones fetched for interview`
+      );
+      return result.evaluacionesByInterview;
+    } catch (error) {
+      console.error(`❌ Error fetching evaluaciones by interview ${entrevistaId}:`, error);
+      throw error;
+    }
+  },
+
+  async getEvaluacionesByCompany(empresaId: string) {
+    try {
+      console.log(`\n📊 SERVICE KPI: Fetching evaluaciones by company: ${empresaId}`);
+
+      if (!empresaId || empresaId.trim() === '') {
+        throw new Error('Invalid empresa ID');
+      }
+
+      const result = await executeQuery<EvaluacionesByCompanyResponse>(
+        EvaluacionQueries.EVALUACIONES_BY_COMPANY,
+        { empresaId }
+      );
+
+      if (!result?.evaluacionesByCompany) {
+        console.warn(`⚠️ Evaluaciones for company ${empresaId} not found`);
+        return null;
+      }
+
+      console.log(
+        `✅ ${result.evaluacionesByCompany.totalEvaluaciones} evaluaciones fetched for company`
+      );
+      return result.evaluacionesByCompany;
+    } catch (error) {
+      console.error(`❌ Error fetching evaluaciones by company ${empresaId}:`, error);
+      throw error;
+    }
+  },
+
+  async getEvaluacionesByInterviewer(entrevistador: string) {
+    try {
+      console.log(`\n📊 SERVICE KPI: Fetching evaluaciones by interviewer: ${entrevistador}`);
+
+      if (!entrevistador || entrevistador.trim() === '') {
+        throw new Error('Invalid entrevistador name');
+      }
+
+      const result = await executeQuery<EvaluacionesByInterviewerResponse>(
+        EvaluacionQueries.EVALUACIONES_BY_INTERVIEWER,
+        { entrevistador }
+      );
+
+      if (!result?.evaluacionesByInterviewer) {
+        console.warn(`⚠️ Evaluaciones for interviewer ${entrevistador} not found`);
+        return null;
+      }
+
+      console.log(
+        `✅ ${result.evaluacionesByInterviewer.totalEvaluaciones} evaluaciones fetched for interviewer`
+      );
+      return result.evaluacionesByInterviewer;
+    } catch (error) {
+      console.error(`❌ Error fetching evaluaciones by interviewer ${entrevistador}:`, error);
       throw error;
     }
   },
