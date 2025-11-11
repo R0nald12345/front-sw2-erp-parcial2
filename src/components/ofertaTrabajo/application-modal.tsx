@@ -19,27 +19,13 @@ interface Offer {
 interface ApplicationModalProps {
   offer: Offer;
   onClose: () => void;
-  onSubmit: (formData: { name: string; email: string; phone: string; cv: File | null }) => void;
+  onSubmit: (formData: { cv: File | null }) => void;
 }
 
 export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalProps) {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    cv: null as File | null,
-  });
+  const [cv, setCv] = useState<File | null>(null);
   const [cvFileName, setCvFileName] = useState("");
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,52 +50,13 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
         return;
       }
 
-      setFormData((prev) => ({
-        ...prev,
-        cv: file,
-      }));
+      setCv(file);
       setCvFileName(file.name);
     }
   };
 
   const validateForm = () => {
-    if (!formData.name.trim()) {
-      Swal.fire({
-        title: "Error",
-        text: "Por favor ingresa tu nombre",
-        icon: "error",
-      });
-      return false;
-    }
-
-    if (!formData.email.trim()) {
-      Swal.fire({
-        title: "Error",
-        text: "Por favor ingresa tu email",
-        icon: "error",
-      });
-      return false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      Swal.fire({
-        title: "Error",
-        text: "Por favor ingresa un email válido",
-        icon: "error",
-      });
-      return false;
-    }
-
-    if (!formData.phone.trim()) {
-      Swal.fire({
-        title: "Error",
-        text: "Por favor ingresa tu teléfono",
-        icon: "error",
-      });
-      return false;
-    }
-
-    if (!formData.cv) {
+    if (!cv) {
       Swal.fire({
         title: "Error",
         text: "Por favor adjunta tu CV en PDF",
@@ -131,10 +78,14 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
 
       // Crear FormData para enviar el CV y el ofertaId
       const formDataToSend = new FormData();
-      formDataToSend.append("pdf0", formData.cv as File);
+      formDataToSend.append("pdf0", cv as File);
       formDataToSend.append("ofertaId", offer.id);
 
       // Hacer la petición HTTP
+      // const response = await fetch("https://automatization-n8n-n8n.hnlumc.easypanel.host/webhook-test/form", {
+      //   method: "POST",
+      //   body: formDataToSend,
+      // });
       const response = await fetch("https://automatization-n8n-n8n.hnlumc.easypanel.host/webhook/form", {
         method: "POST",
         body: formDataToSend,
@@ -146,11 +97,14 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
 
       await new Promise((resolve) => setTimeout(resolve, 500)); // Simular delay
 
+      Swal.fire({
+        title: "¡Éxito!",
+        text: "Tu postulación ha sido enviada correctamente",
+        icon: "success",
+      });
+
       onSubmit({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        cv: formData.cv, // pdf0
+        cv: cv,
       });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -184,51 +138,42 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
         {/* Contenido Scrolleable */}
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            {/* Grid de Inputs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nombre */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Nombre Completo <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Juan Pérez García"
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="juan@email.com"
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
-                />
-              </div>
-
-              {/* Teléfono */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Teléfono <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+591 70000000"
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 text-gray-900 placeholder-gray-400"
-                />
+            {/* Información importante del CV */}
+            <div className="bg-linear-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-6">
+              <p className="text-sm font-bold text-amber-700 uppercase tracking-wider mb-3">
+                ⚠️ Información importante
+              </p>
+              <div className="space-y-2 text-sm text-amber-900">
+                <p className="font-semibold">Tu CV debe contener los siguientes datos:</p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>
+                    📝 <strong>Nombre</strong> completo
+                  </li>
+                  <li>
+                    📧 <strong>Email</strong> de contacto
+                  </li>
+                  <li>
+                    📱 <strong>Teléfono</strong> de contacto
+                  </li>
+                  <li>
+                    💼 <strong>Puesto actual</strong> (si aplica)
+                  </li>
+                  <li>
+                    ⏰ <strong>Años de experiencia</strong>
+                  </li>
+                  <li>
+                    🎓 <strong>Nivel de educación</strong>
+                  </li>
+                  <li>
+                    🛠️ <strong>Habilidades</strong> profesionales
+                  </li>
+                  <li>
+                    🌐 <strong>Idiomas</strong> que dominas
+                  </li>
+                  <li>
+                    🏆 <strong>Certificaciones</strong> relevantes
+                  </li>
+                </ul>
               </div>
             </div>
 
@@ -241,7 +186,7 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
                 <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" id="cv-input" />
                 <label
                   htmlFor="cv-input"
-                  className={`flex items-center justify-center gap-3 w-full px-6 py-4 bg-linear-to-br from-blue-50 to-purple-50 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-3 w-full px-6 py-6 bg-linear-to-br from-blue-50 to-purple-50 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
                     cvFileName
                       ? "border-green-400 bg-green-50"
                       : "border-gray-300 hover:border-blue-400 hover:from-blue-100 hover:to-purple-100"
@@ -256,19 +201,6 @@ export function ApplicationModal({ offer, onClose, onSubmit }: ApplicationModalP
                   </div>
                 </label>
               </div>
-            </div>
-
-            {/* Mensaje */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Mensaje (Opcional)</label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder="Cuéntanos por qué te interesa esta posición y qué te hace un buen candidato..."
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all duration-300 resize-none text-gray-900 placeholder-gray-400"
-              />
             </div>
 
             {/* Detalles de la Oferta - Card mejorada */}

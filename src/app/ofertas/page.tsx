@@ -6,14 +6,13 @@ import { ApplicationModal } from "../../components/ofertaTrabajo/application-mod
 import { Search, Briefcase, Loader } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { useOfertaTrabajo } from "@/src/hooks/erp/useOfertaTrabajo";
+import { OfertaTrabajoType } from "@/src/types/erp/oferta-trabajo.types";
 import Swal from "sweetalert2";
 
 export default function OfertasPage() {
-  const [selectedOffer, setSelectedOffer] = useState<any | null>(null);
+  const [selectedOffer, setSelectedOffer] = useState<OfertaTrabajoType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [applications, setApplications] = useState<
-    Array<{ offerId: string; name: string; email: string; phone: string }>
-  >([]);
+  const [applications, setApplications] = useState<Array<{ offerId: string }>>([]);
 
   const { ofertas, loading, error, refetch } = useOfertaTrabajo();
 
@@ -27,7 +26,7 @@ export default function OfertasPage() {
     }
   }, [error]);
 
-  const handleOpenOffer = (offer: any) => {
+  const handleOpenOffer = (offer: OfertaTrabajoType) => {
     setSelectedOffer(offer);
   };
 
@@ -35,7 +34,7 @@ export default function OfertasPage() {
     setSelectedOffer(null);
   };
 
-  const handleSubmitApplication = async (formData: { name: string; email: string; phone: string; cv: File | null }) => {
+  const handleSubmitApplication = async () => {
     if (selectedOffer) {
       try {
         // Aquí puedes agregar la lógica para enviar la postulación al API
@@ -43,9 +42,6 @@ export default function OfertasPage() {
           ...applications,
           {
             offerId: selectedOffer.id,
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
           },
         ]);
 
@@ -154,21 +150,18 @@ export default function OfertasPage() {
                     className="p-6 bg-white border-2 border-gray-200 rounded-2xl hover:shadow-2xl hover:border-blue-400 transition-all duration-300 group hover:scale-105"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-lg">
-                          {app.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-1">{app.email}</p>
+                      <div>
+                        <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                          ✓ Postulación Enviada
+                        </span>
                       </div>
-                      <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
-                        ✓ Enviada
-                      </span>
                     </div>
                     <div className="mt-5 pt-5 border-t-2 border-gray-100">
                       <p className="text-xs text-gray-500 font-semibold mb-2 uppercase tracking-wider">Oferta:</p>
                       <p className="font-bold text-blue-600 text-base">{offer?.titulo}</p>
                       <p className="text-xs text-gray-600 mt-3">💼 {offer?.empresa?.nombre}</p>
                       <p className="text-xs text-gray-600 mt-1">📍 {offer?.ubicacion}</p>
+                      <p className="text-xs text-gray-600 mt-1">💰 ${offer?.salario?.toLocaleString("es-ES")}</p>
                     </div>
                   </div>
                 );
