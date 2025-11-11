@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { postulacionService } from '@/src/service/microservices/erp/postulacion.service';
-import { invalidateGraphQLCache } from '@/src/service/graphql.service';
-import { PostulacionType } from '@/src/types/erp/postulacion.types';
+import { useState, useEffect, useCallback } from "react";
+import { postulacionService } from "@/src/service/microservices/erp/postulacion.service";
+import { invalidateGraphQLCache } from "@/src/service/graphql.service";
+import { PostulacionType } from "@/src/types/erp/postulacion.types";
 
 interface UsePostulacionReturn {
   postulaciones: PostulacionType[];
@@ -34,6 +34,7 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log("🔍 usePostulacion hook initialized", postulaciones);
   /**
    * Obtiene todas las postulaciones
    */
@@ -48,9 +49,9 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
       console.log(`✅ ${data.length} postulaciones obtenidas`);
       setPostulaciones(data);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error fetching postulaciones';
+      const msg = err instanceof Error ? err.message : "Error fetching postulaciones";
       setError(msg);
-      console.error('❌ Error en fetchPostulaciones:', err);
+      console.error("❌ Error en fetchPostulaciones:", err);
     } finally {
       setLoading(false);
     }
@@ -59,25 +60,22 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
   /**
    * Obtiene una postulación por ID
    */
-  const getPostulacionPorId = useCallback(
-    async (id: string): Promise<PostulacionType | null> => {
-      try {
-        setError(null);
-        console.log(`📋 Fetching postulación por ID: ${id}`);
+  const getPostulacionPorId = useCallback(async (id: string): Promise<PostulacionType | null> => {
+    try {
+      setError(null);
+      console.log(`📋 Fetching postulación por ID: ${id}`);
 
-        const data = await postulacionService.getPostulacionPorId(id);
+      const data = await postulacionService.getPostulacionPorId(id);
 
-        console.log('✅ Postulación obtenida');
-        return data;
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error fetching postulación';
-        setError(msg);
-        console.error('❌ Error en getPostulacionPorId:', err);
-        return null;
-      }
-    },
-    []
-  );
+      console.log("✅ Postulación obtenida");
+      return data;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error fetching postulación";
+      setError(msg);
+      console.error("❌ Error en getPostulacionPorId:", err);
+      return null;
+    }
+  }, []);
 
   /**
    * Crea una nueva postulación
@@ -100,19 +98,19 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
     }): Promise<PostulacionType> => {
       try {
         setError(null);
-        console.log('🆕 Creando nueva postulación...');
+        console.log("🆕 Creando nueva postulación...");
 
         const nuevaPostulacion = await postulacionService.crearPostulacion(data);
 
-        invalidateGraphQLCache('postulaciones');
+        invalidateGraphQLCache("postulaciones");
         await fetchPostulaciones();
 
-        console.log('✅ Postulación creada:', nuevaPostulacion.id);
+        console.log("✅ Postulación creada:", nuevaPostulacion.id);
         return nuevaPostulacion;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error creating postulación';
+        const msg = err instanceof Error ? err.message : "Error creating postulación";
         setError(msg);
-        console.error('❌ Error en crearPostulacion:', err);
+        console.error("❌ Error en crearPostulacion:", err);
         throw err;
       }
     },
@@ -131,16 +129,17 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
         const resultado = await postulacionService.eliminarPostulacion(id);
 
         if (resultado) {
-          invalidateGraphQLCache('postulaciones');
+          invalidateGraphQLCache("postulaciones");
           await fetchPostulaciones();
-          console.log('✅ Postulación eliminada');
+          console.log("✅ Postulación eliminada");
+          return true;
         }
 
-        return resultado;
+        return false;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error deleting postulación';
+        const msg = err instanceof Error ? err.message : "Error deleting postulación";
         setError(msg);
-        console.error('❌ Error en eliminarPostulacion:', err);
+        console.error("❌ Error en eliminarPostulacion:", err);
         throw err;
       }
     },
