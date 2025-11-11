@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
 import { useEmpresa } from "@/src/hooks/erp/useEmpresa";
 import { useState, useMemo } from "react";
-import ListadoEmpresa from "./ListadoEmpresa";
 import HeaderEmpresa from "./HeaderEmpresa";
 // import FormEmpresa from "./FormEmpresa";
 import Swal from "sweetalert2";
 import { EmpresaType, CreateEmpresaInput, UpdateEmpresaInput } from "@/src/types/erp/empresa.types";
 import FormEmpresa from "./FormEmpresa";
+import DetalleEmpresaOfertas from "./DetalleEmpresaOfertas";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 
 const ListadoGeneralEmpresa = () => {
@@ -15,15 +15,17 @@ const ListadoGeneralEmpresa = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedEmpresa, setSelectedEmpresa] = useState<EmpresaType | null>(null);
+  const [vistaDetalle, setVistaDetalle] = useState<EmpresaType | null>(null);
 
   // Filtrar empresas por búsqueda
   const empresasFiltradas = useMemo(() => {
     if (searchTerm.trim() === "") return empresas;
     const term = searchTerm.toLowerCase();
-    return empresas.filter((empresa) =>
-      empresa.nombre.toLowerCase().includes(term) ||
-      empresa.correo.toLowerCase().includes(term) ||
-      empresa.rubro.toLowerCase().includes(term)
+    return empresas.filter(
+      (empresa) =>
+        empresa.nombre.toLowerCase().includes(term) ||
+        empresa.correo.toLowerCase().includes(term) ||
+        empresa.rubro.toLowerCase().includes(term)
     );
   }, [empresas, searchTerm]);
 
@@ -60,31 +62,18 @@ const ListadoGeneralEmpresa = () => {
   };
 
   const handleEdit = (empresa: EmpresaType) => {
-    console.log('✏️ Editando empresa:', empresa.id);
+    console.log("✏️ Editando empresa:", empresa.id);
     setSelectedEmpresa(empresa);
     setShowForm(true);
   };
 
   const handleView = async (empresa: EmpresaType) => {
-    await Swal.fire({
-      title: empresa.nombre,
-      html: `
-        <div class="text-left space-y-2">
-          <p><strong>ID:</strong> ${empresa.id}</p>
-          <p><strong>Correo:</strong> ${empresa.correo}</p>
-          <p><strong>Rubro:</strong> ${empresa.rubro}</p>
-          ${empresa.createdAt ? `<p><strong>Creado:</strong> ${new Date(empresa.createdAt).toLocaleDateString('es-ES')}</p>` : ''}
-          ${empresa.updatedAt ? `<p><strong>Actualizado:</strong> ${new Date(empresa.updatedAt).toLocaleDateString('es-ES')}</p>` : ''}
-          ${empresa.ofertas && empresa.ofertas.length > 0 ? `<p><strong>Ofertas:</strong> ${empresa.ofertas.length}</p>` : ''}
-        </div>
-      `,
-      icon: "info",
-      confirmButtonText: "Cerrar",
-    });
+    console.log("👁️ Abriendo detalle de empresa:", empresa.id);
+    setVistaDetalle(empresa);
   };
 
   const handleAgregarNuevo = () => {
-    console.log('🆕 Crear nueva empresa');
+    console.log("🆕 Crear nueva empresa");
     setSelectedEmpresa(null);
     setShowForm(true);
   };
@@ -93,12 +82,12 @@ const ListadoGeneralEmpresa = () => {
     try {
       if (selectedEmpresa) {
         // Actualizar empresa existente
-        console.log('✏️ Actualizando empresa:', selectedEmpresa.id);
+        console.log("✏️ Actualizando empresa:", selectedEmpresa.id);
         await actualizarEmpresa({
           id: selectedEmpresa.id,
           ...formData,
         } as UpdateEmpresaInput);
-        
+
         await Swal.fire({
           title: "¡Actualizado!",
           text: "Empresa actualizada correctamente.",
@@ -107,9 +96,9 @@ const ListadoGeneralEmpresa = () => {
         });
       } else {
         // Crear nueva empresa
-        console.log('🆕 Creando nueva empresa');
+        console.log("🆕 Creando nueva empresa");
         await crearEmpresa(formData);
-        
+
         await Swal.fire({
           title: "¡Creado!",
           text: "Empresa creada correctamente.",
@@ -132,7 +121,7 @@ const ListadoGeneralEmpresa = () => {
   };
 
   const handleFormClose = () => {
-    console.log('❌ Cerrando formulario');
+    console.log("❌ Cerrando formulario");
     setShowForm(false);
     setSelectedEmpresa(null);
   };
@@ -146,12 +135,14 @@ const ListadoGeneralEmpresa = () => {
     );
   }
 
+  // Si hay una empresa en vista detalle, mostrar el componente de detalle
+  if (vistaDetalle) {
+    return <DetalleEmpresaOfertas empresa={vistaDetalle} onBack={() => setVistaDetalle(null)} />;
+  }
+
   return (
     <>
-      <HeaderEmpresa 
-        onSearch={setSearchTerm} 
-        onAgregarNuevo={handleAgregarNuevo}
-      />
+      <HeaderEmpresa onSearch={setSearchTerm} onAgregarNuevo={handleAgregarNuevo} />
 
       {error && (
         <div className="alert-error mx-4 md:mx-6 mb-6">
@@ -160,13 +151,7 @@ const ListadoGeneralEmpresa = () => {
         </div>
       )}
 
-      {showForm && (
-        <FormEmpresa
-          empresa={selectedEmpresa}
-          onSubmit={handleFormSubmit}
-          onCancel={handleFormClose}
-        />
-      )}
+      {showForm && <FormEmpresa empresa={selectedEmpresa} onSubmit={handleFormSubmit} onCancel={handleFormClose} />}
 
       <main className="w-full mt-5 px-4">
         {/* Empty State */}
@@ -176,9 +161,7 @@ const ListadoGeneralEmpresa = () => {
               <div className="text-6xl mb-4">📭</div>
               <h4 className="text-xl font-semibold text-gray-700 mb-2">No hay empresas</h4>
               <p className="text-gray-600">
-                {searchTerm 
-                  ? `No se encontraron empresas con "${searchTerm}"` 
-                  : 'Comienza agregando una nueva empresa'}
+                {searchTerm ? `No se encontraron empresas con "${searchTerm}"` : "Comienza agregando una nueva empresa"}
               </p>
             </div>
           </div>
@@ -203,24 +186,16 @@ const ListadoGeneralEmpresa = () => {
                     <tr
                       key={empresa.id}
                       className={`${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       } border-b border-gray-200 hover:bg-blue-50 transition-colors`}
                     >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {empresa.nombre}
-                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{empresa.nombre}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{empresa.correo}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{empresa.rubro}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 text-center">
-                        {empresa.ofertas?.length || 0}
-                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600 text-center">{empresa.ofertas?.length || 0}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-3">
-                          <button
-                            onClick={() => handleView(empresa)}
-                            className="btn-outline-small"
-                            title="Ver empresa"
-                          >
+                          <button onClick={() => handleView(empresa)} className="btn-outline-small" title="Ver empresa">
                             <FaEye size={16} />
                           </button>
                           <button
@@ -269,11 +244,7 @@ const ListadoGeneralEmpresa = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button
-                    onClick={() => handleView(empresa)}
-                    className="flex-1 btn-primary-small"
-                    title="Ver empresa"
-                  >
+                  <button onClick={() => handleView(empresa)} className="flex-1 btn-primary-small" title="Ver empresa">
                     <FaEye size={14} className="mr-2" />
                     Ver
                   </button>

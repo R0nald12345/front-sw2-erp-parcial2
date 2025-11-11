@@ -61,3 +61,25 @@ export const GET_OFERTA_TRABAJO_POR_ID = `
     }
   }
 `;
+
+export const GET_OFERTA_TRABAJO_POR_EMPRESA = `
+  query ObtenerOfertasPorEmpresa($empresaId: UUID!, $limit: Int) {
+    obtenerOfertasPorEmpresa(empresaId: $empresaId, limit: $limit) {
+      id
+      titulo
+      descripcion
+      salario
+      ubicacion
+      requisitos
+      fechaPublicacion
+      createdAt
+      updatedAt
+      empresa {
+        id
+        nombre
+        correo
+        rubro
+      }
+    }
+  }
+`;
