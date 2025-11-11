@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaBuilding, FaBriefcase, FaUserTie, FaVideo, FaTrophy, FaChartBar } from "react-icons/fa";
+import { FaBuilding, FaBriefcase, FaUserTie, FaVideo, FaTrophy, FaChartBar, FaProjectDiagram } from "react-icons/fa";
 
 interface MenuItem {
   title: string;
@@ -46,6 +46,13 @@ const menuItems: MenuItem[] = [
     icon: <FaTrophy size={32} />,
     href: "/dashboard/evaluaciones",
     color: "text-purple-600",
+  },
+  {
+    title: "Clustering de Candidatos",
+    description: "Visualiza clusters de candidatos por similitud",
+    icon: <FaProjectDiagram size={32} />,
+    href: "/dashboard/clustering",
+    color: "text-indigo-600",
   },
   {
     title: "Reportes",
