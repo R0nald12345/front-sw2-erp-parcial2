@@ -4,6 +4,7 @@ import { RiAlignRight } from "react-icons/ri";
 import { IoMdClose } from "react-icons/io";
 import { useState, useEffect } from "react";
 import { MdDashboard } from "react-icons/md";
+import { BiPieChart, BiSearch } from "react-icons/bi";
 import { FaProjectDiagram } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,6 +27,8 @@ const Sidebar = () => {
     { icon: MdDashboard, text: "Entrevista", path: "entrevista" },
     { icon: MdDashboard, text: "Evaluaciones", path: "evaluaciones" },
     { icon: FaProjectDiagram, text: "Clustering", path: "clustering" },
+    { icon: BiPieChart, text: "KPI Entrevistas", path: "entrevistas-kpi" },
+    { icon: BiSearch, text: "Búsqueda de KPI", path: "kpi-busqueda" },
     { icon: MdDashboard, text: "Reportes", path: "reporte" },
   ];
 

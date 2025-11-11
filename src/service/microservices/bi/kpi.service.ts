@@ -447,4 +447,129 @@ export const kpiService = {
       throw error;
     }
   },
+
+  // ========================================================================
+  // ENTREVISTAS KPI
+  // ========================================================================
+
+  async getAllInterviewsKPI(): Promise<AllInterviewsObjectivesSummary> {
+    try {
+      console.log(`\n🎯 SERVICE KPI: Fetching all interviews KPI`);
+
+      const result = await executeQuery<GetAllInterviewsObjectivesKPIResponse>(
+        KPIQueries.GET_ALL_INTERVIEWS_OBJECTIVES_KPI,
+        {}
+      );
+
+      if (!result?.allInterviewsObjectivesKPI) {
+        throw new Error("Failed to fetch all interviews KPI");
+      }
+
+      console.log("✅ All interviews KPI fetched");
+      return result.allInterviewsObjectivesKPI;
+    } catch (error) {
+      console.error("❌ Error fetching all interviews KPI:", error);
+      throw error;
+    }
+  },
+
+  async getInterviewKPI(interviewId: string): Promise<InterviewObjectivesKPI | null> {
+    try {
+      console.log(`\n🎯 SERVICE KPI: Fetching interview KPI: ${interviewId}`);
+
+      if (!interviewId || interviewId.trim() === "") {
+        throw new Error("Invalid interview ID");
+      }
+
+      const result = await executeQuery<GetInterviewObjectivesKPIResponse>(
+        KPIQueries.GET_INTERVIEW_OBJECTIVES_KPI,
+        { interviewId }
+      );
+
+      if (!result?.interviewObjectivesKPI) {
+        console.warn(`⚠️ Interview KPI ${interviewId} not found`);
+        return null;
+      }
+
+      console.log("✅ Interview KPI fetched");
+      return result.interviewObjectivesKPI;
+    } catch (error) {
+      console.error(`❌ Error fetching interview KPI:`, error);
+      throw error;
+    }
+  },
+
+  async getInterviewsByCandidate(candidateName: string): Promise<CandidateInterviewStats | null> {
+    try {
+      console.log(`\n👤 SERVICE KPI: Fetching interviews by candidate: ${candidateName}`);
+
+      if (!candidateName || candidateName.trim() === "") {
+        throw new Error("Invalid candidate name");
+      }
+
+      const result = await executeQuery<GetCandidateInterviewsObjectivesKPIResponse>(
+        KPIQueries.GET_CANDIDATE_INTERVIEWS_OBJECTIVES_KPI,
+        { candidateName }
+      );
+
+      if (!result?.candidateInterviewsObjectivesKPI) {
+        console.warn(`⚠️ Interviews for candidate ${candidateName} not found`);
+        return null;
+      }
+
+      console.log("✅ Interviews by candidate fetched");
+      return result.candidateInterviewsObjectivesKPI;
+    } catch (error) {
+      console.error(`❌ Error fetching interviews by candidate:`, error);
+      throw error;
+    }
+  },
+
+  async getInterviewsByCompany(empresaId: string): Promise<CompanyInterviewStats | null> {
+    try {
+      console.log(`\n🎯 SERVICE KPI: Fetching interviews by company: ${empresaId}`);
+
+      if (!empresaId || empresaId.trim() === "") {
+        throw new Error("Invalid empresa ID");
+      }
+
+      const result = await executeQuery<GetInterviewObjectivesByCompanyResponse>(
+        KPIQueries.GET_INTERVIEW_OBJECTIVES_BY_COMPANY,
+        { empresaId }
+      );
+
+      if (!result?.interviewObjectivesByCompany) {
+        console.warn(`⚠️ Interviews for company ${empresaId} not found`);
+        return null;
+      }
+
+      console.log("✅ Interviews by company fetched");
+      return result.interviewObjectivesByCompany;
+    } catch (error) {
+      console.error(`❌ Error fetching interviews by company:`, error);
+      throw error;
+    }
+  },
+
+  async getAllCompaniesInterviews(): Promise<CompanyInterviewStats[]> {
+    try {
+      console.log(`\n🎯 SERVICE KPI: Fetching all companies interviews`);
+
+      const result = await executeQuery<GetAllCompaniesInterviewObjectivesResponse>(
+        KPIQueries.GET_ALL_COMPANIES_INTERVIEW_OBJECTIVES,
+        {}
+      );
+
+      if (!result?.allCompaniesInterviewObjectives) {
+        console.warn("⚠️ No companies interviews returned");
+        return [];
+      }
+
+      console.log(`✅ ${result.allCompaniesInterviewObjectives.length} companies interviews fetched`);
+      return result.allCompaniesInterviewObjectives;
+    } catch (error) {
+      console.error("❌ Error fetching all companies interviews:", error);
+      throw error;
+    }
+  },
 };
