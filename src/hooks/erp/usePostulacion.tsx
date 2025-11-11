@@ -29,12 +29,13 @@ interface UsePostulacionReturn {
   eliminarPostulacion: (id: string) => Promise<boolean>;
 }
 
-export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
+export const usePostulacion = (limit: number = 30): UsePostulacionReturn => {
   const [postulaciones, setPostulaciones] = useState<PostulacionType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log("🔍 usePostulacion hook initialized", postulaciones);
+  console.log("🫨🫨", postulaciones);
+
   /**
    * Obtiene todas las postulaciones
    */
@@ -46,7 +47,7 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
 
       const data = await postulacionService.getPostulaciones(limit);
 
-      console.log(`✅ ${data.length} postulaciones obtenidas`);
+      console.log(`✅ ${data.length} Gateway is accessible`);
       setPostulaciones(data);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error fetching postulaciones";
@@ -132,10 +133,9 @@ export const usePostulacion = (limit: number = 10): UsePostulacionReturn => {
           invalidateGraphQLCache("postulaciones");
           await fetchPostulaciones();
           console.log("✅ Postulación eliminada");
-          return true;
         }
 
-        return false;
+        return resultado;
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Error deleting postulación";
         setError(msg);

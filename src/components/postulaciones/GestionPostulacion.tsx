@@ -394,7 +394,9 @@ const GestionPostulacion = () => {
                       </div>
 
                       <div className="bg-white rounded-lg p-3 border border-blue-100">
-                        <p className="text-sm font-semibold text-gray-800 mb-2">{compatibilityData.compatibilityLevel}</p>
+                        <p className="text-sm font-semibold text-gray-800 mb-2">
+                          {compatibilityData.compatibilityLevel}
+                        </p>
                       </div>
 
                       <div className="bg-white rounded-lg p-3 border border-blue-100">

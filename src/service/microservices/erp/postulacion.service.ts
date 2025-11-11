@@ -1,7 +1,7 @@
-import { executeQuery, executeMutation } from '../../graphql.service';
-import * as PostulacionQueries from '@/src/graphql/queries/erp/postulacion.queries';
-import * as PostulacionMutations from '@/src/graphql/mutations/erp/postulacion.mutations';
-import { PostulacionType } from '@/src/types/erp/postulacion.types';
+import { executeQuery, executeMutation } from "../../graphql.service";
+import * as PostulacionQueries from "@/src/graphql/queries/erp/postulacion.queries";
+import * as PostulacionMutations from "@/src/graphql/mutations/erp/postulacion.mutations";
+import { PostulacionType } from "@/src/types/erp/postulacion.types";
 
 interface GetPostulacionesResponse {
   postulaciones: PostulacionType[];
@@ -24,24 +24,21 @@ interface DeletePostulacionResponse {
 }
 
 export const postulacionService = {
-  async getPostulaciones(limit: number = 10): Promise<PostulacionType[]> {
+  async getPostulaciones(limit: number = 30): Promise<PostulacionType[]> {
     try {
       console.log(`\n📋 SERVICE: Fetching postulaciones with limit: ${limit}`);
 
-      const result = await executeQuery<GetPostulacionesResponse>(
-        PostulacionQueries.GET_POSTULACIONES,
-        { limit }
-      );
+      const result = await executeQuery<GetPostulacionesResponse>(PostulacionQueries.GET_POSTULACIONES, { limit });
 
       if (!result?.postulaciones) {
-        console.warn('⚠️ No postulaciones returned');
+        console.warn("⚠️ No postulaciones returned");
         return [];
       }
 
       console.log(`✅ ${result.postulaciones.length} postulaciones fetched`);
       return result.postulaciones;
     } catch (error) {
-      console.error('❌ Error fetching postulaciones:', error);
+      console.error("❌ Error fetching postulaciones:", error);
       throw error;
     }
   },
@@ -50,21 +47,18 @@ export const postulacionService = {
     try {
       console.log(`\n📋 SERVICE: Fetching postulación with id: ${id}`);
 
-      if (!id || id.trim() === '') {
-        throw new Error('Invalid postulación ID');
+      if (!id || id.trim() === "") {
+        throw new Error("Invalid postulación ID");
       }
 
-      const result = await executeQuery<GetPostulacionPorIdResponse>(
-        PostulacionQueries.GET_POSTULACION_POR_ID,
-        { id }
-      );
+      const result = await executeQuery<GetPostulacionPorIdResponse>(PostulacionQueries.GET_POSTULACION_POR_ID, { id });
 
       if (!result?.postulacion) {
         console.warn(`⚠️ Postulación ${id} not found`);
         return null;
       }
 
-      console.log('✅ Postulación fetched:', result.postulacion.nombre);
+      console.log("✅ Postulación fetched:", result.postulacion.nombre);
       return result.postulacion;
     } catch (error) {
       console.error(`❌ Error fetching postulación ${id}:`, error);
@@ -91,26 +85,23 @@ export const postulacionService = {
       console.log(`\n🆕 SERVICE: Creating postulación:`, data.nombre);
 
       if (!data.nombre || !data.email || !data.ofertaId) {
-        throw new Error('Missing required fields');
+        throw new Error("Missing required fields");
       }
 
       if (data.aniosExperiencia < 0) {
-        throw new Error('Experience years must be >= 0');
+        throw new Error("Experience years must be >= 0");
       }
 
-      const result = await executeMutation<CreatePostulacionResponse>(
-        PostulacionMutations.CREAR_POSTULACION,
-        data
-      );
+      const result = await executeMutation<CreatePostulacionResponse>(PostulacionMutations.CREAR_POSTULACION, data);
 
       if (!result?.createPostulacion) {
-        throw new Error('Error creating postulación');
+        throw new Error("Error creating postulación");
       }
 
-      console.log('✅ Postulación created:', result.createPostulacion.id);
+      console.log("✅ Postulación created:", result.createPostulacion.id);
       return result.createPostulacion;
     } catch (error) {
-      console.error('❌ Error creating postulación:', error);
+      console.error("❌ Error creating postulación:", error);
       throw error;
     }
   },
@@ -120,7 +111,7 @@ export const postulacionService = {
       console.log(`\n✏️ SERVICE: Updating postulación status: ${id} -> ${estado}`);
 
       if (!id || !estado) {
-        throw new Error('Missing required fields');
+        throw new Error("Missing required fields");
       }
 
       const result = await executeMutation<UpdateEstadoPostulacionResponse>(
@@ -129,10 +120,10 @@ export const postulacionService = {
       );
 
       if (!result?.updatePostulacion) {
-        throw new Error('Error updating postulación status');
+        throw new Error("Error updating postulación status");
       }
 
-      console.log('✅ Postulación status updated:', result.updatePostulacion.id);
+      console.log("✅ Postulación status updated:", result.updatePostulacion.id);
       return result.updatePostulacion;
     } catch (error) {
       console.error(`❌ Error updating postulación status:`, error);
@@ -144,20 +135,19 @@ export const postulacionService = {
     try {
       console.log(`\n🗑️ SERVICE: Deleting postulación: ${id}`);
 
-      if (!id || id.trim() === '') {
-        throw new Error('Invalid postulación ID');
+      if (!id || id.trim() === "") {
+        throw new Error("Invalid postulación ID");
       }
 
-      const result = await executeMutation<DeletePostulacionResponse>(
-        PostulacionMutations.ELIMINAR_POSTULACION,
-        { id }
-      );
+      const result = await executeMutation<DeletePostulacionResponse>(PostulacionMutations.ELIMINAR_POSTULACION, {
+        id,
+      });
 
       if (!result?.deletePostulacion) {
-        throw new Error('Error deleting postulación');
+        throw new Error("Error deleting postulación");
       }
 
-      console.log('✅ Postulación deleted:', result.deletePostulacion);
+      console.log("✅ Postulación deleted:", result.deletePostulacion);
       return result.deletePostulacion;
     } catch (error) {
       console.error(`❌ Error deleting postulación ${id}:`, error);
